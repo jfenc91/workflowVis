@@ -8,6 +8,7 @@
 
 import Ajv from 'ajv';
 import Ajv2020 from 'ajv/dist/2020';
+import addFormats from 'ajv-formats';
 import type { ValidateFunction } from 'ajv';
 
 // ── Exported type brands ────────────────────────────────────────────
@@ -102,10 +103,12 @@ export function initValidators(): Promise<void> {
 
       // Pipeline schema uses draft-07 (OpenMetadata)
       const ajv07 = new Ajv({ allErrors: true, strict: false });
+      addFormats(ajv07);
       pipelineValidate = ajv07.compile(pipelineSchema);
 
       // Event schema uses draft-2020-12 (OpenLineage native format with $defs)
       const ajv2020 = new Ajv2020({ allErrors: true, strict: false });
+      addFormats(ajv2020);
       // The schema defines RunEvent, DatasetEvent, and JobEvent via oneOf.
       // Compile against RunEvent specifically since that's what the app processes.
       // DatasetEvent and JobEvent definitions remain in the schema for completeness.

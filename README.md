@@ -4,7 +4,9 @@ A canvas-based visualization library for rendering pipeline DAGs from OpenMetada
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 ![Canvas](https://img.shields.io/badge/Rendering-Canvas%20%2B%20WebGL-orange)
-![Zero Dependencies](https://img.shields.io/badge/Runtime%20Deps-0-green)
+![AJV](https://img.shields.io/badge/Validation-AJV-green)
+
+![Pipeline Visualizer Screenshot](docs/screenshot.png)
 
 ## Features
 
@@ -131,7 +133,7 @@ The app ships with 7 sample scenarios:
 
 ## Tech Stack
 
-- **TypeScript** (strict, ES2022) — zero runtime dependencies
+- **TypeScript** (strict, ES2022) — minimal dependencies (AJV for schema validation)
 - **Canvas 2D** — node/edge rendering with theme-aware colors
 - **WebGL** — point sprite particle system with custom shaders
 - **esbuild** — fast transpilation and bundling

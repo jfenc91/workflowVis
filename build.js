@@ -24,6 +24,14 @@ async function bundleVendor() {
       platform: 'browser',
       sourcemap: true,
     }),
+    esbuild.build({
+      entryPoints: ['node_modules/ajv-formats/dist/index.js'],
+      bundle: true,
+      format: 'esm',
+      outfile: 'build/vendor/ajv-formats.js',
+      platform: 'browser',
+      sourcemap: true,
+    }),
   ]);
 }
 
