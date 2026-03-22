@@ -84,6 +84,17 @@ export const RUNS: Record<string, RunDefinition> = {
       'examples/events/batch/02_document_map_events.json',
     ],
   },
+  dynamic: {
+    label: 'Dynamic Routing',
+    pipelines: [
+      'examples/pipelines/dynamic_routing_pipeline.json',
+      'examples/pipelines/batch_processor_pipeline.json',
+      'examples/pipelines/stream_processor_pipeline.json',
+    ],
+    events: [
+      'examples/events/dynamic/01_dynamic_routing_events.json',
+    ],
+  },
   'invalid-pipeline': {
     label: 'Invalid Pipeline',
     pipelines: [

@@ -39,4 +39,7 @@ export class DataSource {
 
   // Register callback for node status changes: fn(nodeId, event)
   onNodeEvent(_fn: (nodeId: string, event: PipelineEvent) => void): void {}
+
+  // Register callback for dynamic sub-pipeline binding
+  onDynamicBind(_fn: (parentNodeId: string, childPipelineName: string) => void): void {}
 }

@@ -156,6 +156,39 @@ export class DagModel {
   }
 }
 
+export function buildPipelineFragment(pipeline: Pipeline, parentNode: DagNode, model: DagModel): void {
+  const taskNodes: DagNode[] = [];
+  for (const task of pipeline.tasks) {
+    const nodeId = `${pipeline.name}::${task.name}`;
+    const node = new DagNode(nodeId, {
+      displayName: task.displayName,
+      taskType: task.taskType,
+      description: task.description,
+      fqn: task.fqn,
+      pipelineName: pipeline.name,
+      taskSQL: task.taskSQL,
+    });
+    node.parent = parentNode;
+    model.nodes.set(nodeId, node);
+    taskNodes.push(node);
+  }
+  let edgeCount = model.edges.size;
+  for (const task of pipeline.tasks) {
+    const sourceId = `${pipeline.name}::${task.name}`;
+    for (const downName of task.downstreamTasks) {
+      const targetId = `${pipeline.name}::${downName}`;
+      if (model.nodes.has(targetId)) {
+        const edgeId = `e${edgeCount++}`;
+        const edge = new DagEdge(edgeId, sourceId, targetId);
+        model.edges.set(edgeId, edge);
+        model.nodes.get(sourceId)!.edges.push(edgeId);
+        model.nodes.get(targetId)!.inEdges.push(edgeId);
+      }
+    }
+  }
+  parentNode.children = taskNodes;
+}
+
 export function buildDag(pipelines: Pipeline[]): DagModel {
   const model = new DagModel();
   let edgeCounter = 0;

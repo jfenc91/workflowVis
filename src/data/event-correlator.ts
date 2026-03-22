@@ -1,17 +1,26 @@
 // Map OpenLineage events to DAG nodes and update statuses
 
-import type { PipelineEvent } from '../types.js';
+import type { Pipeline, PipelineEvent } from '../types.js';
 import type { DagNode, DagModel } from './dag-builder.js';
+import { buildPipelineFragment } from './dag-builder.js';
 
 export class EventCorrelator {
   dag: DagModel;
   runIdToNodeId: Map<string, string>;
   listeners: ((nodeId: string, event: PipelineEvent) => void)[];
+  candidatePipelines: Map<string, Pipeline> | null;
+  dynamicBindListeners: ((parentNodeId: string, childPipelineName: string) => void)[];
 
-  constructor(dagModel: DagModel) {
+  constructor(dagModel: DagModel, candidatePipelines?: Map<string, Pipeline>) {
     this.dag = dagModel;
     this.runIdToNodeId = new Map();
     this.listeners = [];
+    this.candidatePipelines = candidatePipelines || null;
+    this.dynamicBindListeners = [];
+  }
+
+  onDynamicBind(fn: (parentNodeId: string, childPipelineName: string) => void): void {
+    this.dynamicBindListeners.push(fn);
   }
 
   onChange(fn: (nodeId: string, event: PipelineEvent) => void): void {
@@ -67,6 +76,26 @@ export class EventCorrelator {
           const childName = node.childPipelineFqn.replace(/^Airflow\./, '');
           if (childName === event.pipelineName) {
             return node;
+          }
+        }
+      }
+
+      // Dynamic bind: check if event's parentJobName points to an unbound SubPipeline
+      if (event.parentJobName) {
+        const dotIdx = event.parentJobName.indexOf('.');
+        if (dotIdx >= 0) {
+          const parentPipeline = event.parentJobName.substring(0, dotIdx);
+          const parentTask = event.parentJobName.substring(dotIdx + 1);
+          const parentNodeId = `${parentPipeline}::${parentTask}`;
+          const parentNode = this.dag.getNode(parentNodeId);
+          if (parentNode?.isSubPipeline && parentNode.children.length === 0 && this.candidatePipelines) {
+            const candidate = this.candidatePipelines.get(event.pipelineName);
+            if (candidate) {
+              buildPipelineFragment(candidate, parentNode, this.dag);
+              parentNode.childPipelineFqn = candidate.fqn;
+              for (const fn of this.dynamicBindListeners) fn(parentNode.id, event.pipelineName);
+              return parentNode;
+            }
           }
         }
       }

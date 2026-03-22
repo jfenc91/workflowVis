@@ -1,6 +1,6 @@
 // Simulation data source: wraps clock, streamer, correlator, and run loading.
 
-import type { Capabilities, PipelineEvent, RunDefinition } from '../types.js';
+import type { Capabilities, Pipeline, PipelineEvent, RunDefinition } from '../types.js';
 import type { DagModel } from '../data/dag-builder.js';
 import type { FrameState } from '../data/data-source.js';
 import { DataSource } from '../data/data-source.js';
@@ -30,6 +30,7 @@ export class SimulationSource extends DataSource {
   events: PipelineEvent[];
   rawPipelines: Map<string, unknown>;
   _nodeEventListeners: ((nodeId: string, event: PipelineEvent) => void)[];
+  _dynamicBindListeners: ((parentNodeId: string, childPipelineName: string) => void)[];
   _endListeners: (() => void)[];
 
   constructor() {
@@ -41,6 +42,7 @@ export class SimulationSource extends DataSource {
     this.events = [];
     this.rawPipelines = new Map();
     this._nodeEventListeners = [];
+    this._dynamicBindListeners = [];
     this._endListeners = [];
 
     this.clock.onChange((type) => {
@@ -72,7 +74,23 @@ export class SimulationSource extends DataSource {
     this.rawPipelines = pipelineResult.raw;
     this.dagModel = buildDag(pipelineResult.pipelines);
     this.events = events;
-    this.correlator = new EventCorrelator(this.dagModel);
+
+    // Build candidate pipelines map from pipelines not used in the DAG
+    const usedPipelineNames = new Set<string>();
+    for (const node of this.dagModel.nodes.values()) {
+      usedPipelineNames.add(node.pipelineName);
+    }
+    const candidatePipelines = new Map<string, Pipeline>();
+    for (const p of pipelineResult.pipelines) {
+      if (!usedPipelineNames.has(p.name)) {
+        candidatePipelines.set(p.name, p);
+      }
+    }
+
+    this.correlator = new EventCorrelator(
+      this.dagModel,
+      candidatePipelines.size > 0 ? candidatePipelines : undefined,
+    );
     this.streamer = new EventStreamer(events, this.correlator);
 
     if (events.length > 0) {
@@ -85,12 +103,18 @@ export class SimulationSource extends DataSource {
       for (const fn of this._nodeEventListeners) fn(nodeId, event);
     });
 
+    // Wire dynamic bind listeners through correlator
+    this.correlator.onDynamicBind((parentNodeId, childPipelineName) => {
+      for (const fn of this._dynamicBindListeners) fn(parentNodeId, childPipelineName);
+    });
+
     return this.dagModel;
   }
 
   dispose(): void {
     this.clock.pause();
     this._nodeEventListeners = [];
+    this._dynamicBindListeners = [];
     this._endListeners = [];
   }
 
@@ -156,6 +180,10 @@ export class SimulationSource extends DataSource {
 
   onNodeEvent(fn: (nodeId: string, event: PipelineEvent) => void): void {
     this._nodeEventListeners.push(fn);
+  }
+
+  onDynamicBind(fn: (parentNodeId: string, childPipelineName: string) => void): void {
+    this._dynamicBindListeners.push(fn);
   }
 
   onEnd(fn: () => void): void {

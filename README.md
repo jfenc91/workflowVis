@@ -41,7 +41,7 @@ Then open **http://localhost:8000** in your browser.
 | `make dev` | Watch mode — recompile on file changes |
 | `make build` | Bundle library to `dist/` |
 | `make check` | Type-check (no emit) |
-| `make test` | Run 96 tests headlessly via Playwright |
+| `make test` | Run 104 tests headlessly via Playwright |
 | `make test-browser` | Open test page in browser |
 | `make open` | Open app in default browser |
 | `make clean` | Stop servers, remove pid files |
@@ -88,7 +88,7 @@ examples/
   events/                 Sample OpenLineage event JSON by scenario
 
 tests/
-  test-*.ts               8 test suites, 96 tests total
+  test-*.ts               8 test suites, 104 tests total
   run_tests.js            Playwright headless runner
 ```
 
@@ -119,7 +119,7 @@ Pipeline JSON files          OpenLineage event JSON files
 
 ## Example Runs
 
-The app ships with 7 sample scenarios:
+The app ships with 8 sample scenarios:
 
 | Run | Description |
 |-----|-------------|
@@ -130,6 +130,7 @@ The app ships with 7 sample scenarios:
 | Media Encoding | Video transcoding pipeline |
 | Checkout Flow | Multi-step checkout with inventory and payment |
 | Batch Processing | Bulk data processing pipeline |
+| Dynamic Routing | Config-driven routing — sub-pipeline discovered at runtime via OpenLineage events |
 
 ## Tech Stack
 
@@ -139,6 +140,16 @@ The app ships with 7 sample scenarios:
 - **esbuild** — fast transpilation and bundling
 - **Playwright** — headless browser testing
 - **Python 3** (stdlib only) — static file server + fake data API
+
+## Sub-Pipeline Discovery
+
+The system resolves sub-pipelines in two modes:
+
+- **Static**: `buildDag()` matches SubPipeline task names to loaded pipeline FQNs at load time. If a task with `taskType: "SubPipeline"` has a `name` that matches another pipeline's `fqn`, its children are built immediately.
+
+- **Dynamic**: When a SubPipeline task name doesn't match any loaded pipeline, the system waits for OpenLineage events. A child pipeline's `parent` run facet (containing `job.name: "parent_pipeline.task_name"`) links it to the unbound SubPipeline node. The candidate pipeline is then grafted into the DAG at runtime, triggering a relayout.
+
+Candidate pipelines are loaded alongside the parent but remain dormant until events reveal which one ran. The "Dynamic Routing" example demonstrates this: three pipelines are loaded, but only the `batch_processor_pipeline` is grafted in when its START event carries a parent facet pointing to the `__dynamic_processor__` placeholder task.
 
 ## Custom Data Sources
 

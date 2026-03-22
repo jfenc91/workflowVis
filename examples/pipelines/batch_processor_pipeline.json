@@ -1,0 +1,45 @@
+{
+  "id": "dyn-0000-0000-0000-000000000002",
+  "name": "batch_processor_pipeline",
+  "displayName": "Batch Processor",
+  "fullyQualifiedName": "Airflow.batch_processor_pipeline",
+  "description": "Processes data in batch mode: chunks input, processes each chunk, then merges results.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "chunk_data",
+      "displayName": "Chunk Data",
+      "fullyQualifiedName": "Airflow.batch_processor_pipeline.chunk_data",
+      "description": "Splits input data into chunks for parallel processing.",
+      "taskType": "Extract",
+      "downstreamTasks": ["process_chunk"]
+    },
+    {
+      "name": "process_chunk",
+      "displayName": "Process Chunk",
+      "fullyQualifiedName": "Airflow.batch_processor_pipeline.process_chunk",
+      "description": "Applies transformation logic to each data chunk.",
+      "taskType": "Transform",
+      "downstreamTasks": ["merge_results"]
+    },
+    {
+      "name": "merge_results",
+      "displayName": "Merge Results",
+      "fullyQualifiedName": "Airflow.batch_processor_pipeline.merge_results",
+      "description": "Merges processed chunks into the final output dataset.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": null,
+  "concurrency": 4,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "PipelinePattern.BatchProcessor" }
+  ]
+}

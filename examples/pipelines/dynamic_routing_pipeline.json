@@ -1,0 +1,45 @@
+{
+  "id": "dyn-0000-0000-0000-000000000001",
+  "name": "dynamic_routing_pipeline",
+  "displayName": "Dynamic Routing Pipeline",
+  "fullyQualifiedName": "Airflow.dynamic_routing_pipeline",
+  "description": "Config-driven orchestrator that routes work to a sub-pipeline discovered at runtime. The __dynamic_processor__ task is a placeholder resolved by OpenLineage events.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "validate_input",
+      "displayName": "Validate Input",
+      "fullyQualifiedName": "Airflow.dynamic_routing_pipeline.validate_input",
+      "description": "Validates input configuration and determines the processing mode.",
+      "taskType": "Extract",
+      "downstreamTasks": ["__dynamic_processor__"]
+    },
+    {
+      "name": "__dynamic_processor__",
+      "displayName": "Dynamic Processor",
+      "fullyQualifiedName": "Airflow.dynamic_routing_pipeline.__dynamic_processor__",
+      "description": "Placeholder sub-pipeline resolved at runtime based on config-driven routing.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["publish_results"]
+    },
+    {
+      "name": "publish_results",
+      "displayName": "Publish Results",
+      "fullyQualifiedName": "Airflow.dynamic_routing_pipeline.publish_results",
+      "description": "Publishes processed results to downstream consumers.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": "0 */4 * * *",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "PipelinePattern.DynamicRouting" }
+  ]
+}

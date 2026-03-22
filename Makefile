@@ -21,7 +21,7 @@ start: ## Start app server (8000) and data API server (8001)
 	@echo "Starting data API server on http://localhost:8001..."
 	@python3 api/data_server.py > /dev/null 2>&1 & echo $$! > $(PID_DIR)/data.pid
 	@echo "Starting app server on http://localhost:8000..."
-	@python3 -m http.server 8000 > /dev/null 2>&1 & echo $$! > $(PID_DIR)/http.pid
+	@python3 api/app_server.py > /dev/null 2>&1 & echo $$! > $(PID_DIR)/http.pid
 	@sleep 1
 	@echo ""
 	@echo "  App:      http://localhost:8000"

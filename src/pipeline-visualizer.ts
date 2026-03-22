@@ -88,6 +88,13 @@ export class PipelineVisualizer {
       }
       this.detailPanel.update();
     });
+
+    this.source.onDynamicBind(() => {
+      if (this.dagModel) {
+        relayout(this.dagModel);
+        this.camera.fitToContent(this.dagModel.allNodes());
+      }
+    });
   }
 
   // Create the expected DOM structure if it doesn't already exist.

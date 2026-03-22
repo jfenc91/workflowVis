@@ -1,0 +1,45 @@
+{
+  "id": "dyn-0000-0000-0000-000000000003",
+  "name": "stream_processor_pipeline",
+  "displayName": "Stream Processor",
+  "fullyQualifiedName": "Airflow.stream_processor_pipeline",
+  "description": "Processes data in streaming mode: opens a stream, processes records in micro-batches, then closes the stream.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "open_stream",
+      "displayName": "Open Stream",
+      "fullyQualifiedName": "Airflow.stream_processor_pipeline.open_stream",
+      "description": "Opens a connection to the streaming data source.",
+      "taskType": "Extract",
+      "downstreamTasks": ["process_records"]
+    },
+    {
+      "name": "process_records",
+      "displayName": "Process Records",
+      "fullyQualifiedName": "Airflow.stream_processor_pipeline.process_records",
+      "description": "Processes incoming records in micro-batches.",
+      "taskType": "Transform",
+      "downstreamTasks": ["close_stream"]
+    },
+    {
+      "name": "close_stream",
+      "displayName": "Close Stream",
+      "fullyQualifiedName": "Airflow.stream_processor_pipeline.close_stream",
+      "description": "Closes the stream connection and flushes remaining data.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": null,
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "PipelinePattern.StreamProcessor" }
+  ]
+}
