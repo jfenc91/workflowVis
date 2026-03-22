@@ -1,0 +1,69 @@
+{
+  "id": "c1c1c1c1-1111-4ccc-dddd-000000000001",
+  "name": "ml_feature_pipeline",
+  "displayName": "ML Feature Engineering Pipeline",
+  "fullyQualifiedName": "Airflow.ml_feature_pipeline",
+  "description": "Computes and validates feature vectors for the churn prediction model. Reads from mart tables and writes to the feature store.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "compute_user_activity_features",
+      "displayName": "Compute User Activity Features",
+      "fullyQualifiedName": "Airflow.ml_feature_pipeline.compute_user_activity_features",
+      "description": "Aggregates login frequency, session duration, and page-view counts over 7/30/90-day windows.",
+      "taskType": "Transform",
+      "taskSQL": "SELECT user_id, COUNT(*) AS login_count_30d, AVG(session_seconds) AS avg_session_30d FROM mart.user_sessions WHERE event_date >= CURRENT_DATE - 30 GROUP BY user_id",
+      "downstreamTasks": ["join_feature_vector"]
+    },
+    {
+      "name": "compute_purchase_features",
+      "displayName": "Compute Purchase Features",
+      "fullyQualifiedName": "Airflow.ml_feature_pipeline.compute_purchase_features",
+      "description": "Calculates purchase recency, frequency, and monetary (RFM) features.",
+      "taskType": "Transform",
+      "downstreamTasks": ["join_feature_vector"]
+    },
+    {
+      "name": "compute_support_features",
+      "displayName": "Compute Support Ticket Features",
+      "fullyQualifiedName": "Airflow.ml_feature_pipeline.compute_support_features",
+      "description": "Counts open tickets, average resolution time, and escalation rate per user.",
+      "taskType": "Transform",
+      "downstreamTasks": ["join_feature_vector"]
+    },
+    {
+      "name": "join_feature_vector",
+      "displayName": "Join Feature Vector",
+      "fullyQualifiedName": "Airflow.ml_feature_pipeline.join_feature_vector",
+      "description": "Joins all feature groups into a single wide feature vector keyed by user_id.",
+      "taskType": "Transform",
+      "downstreamTasks": ["validate_features", "write_feature_store"]
+    },
+    {
+      "name": "validate_features",
+      "displayName": "Validate Features (Great Expectations)",
+      "fullyQualifiedName": "Airflow.ml_feature_pipeline.validate_features",
+      "description": "Runs Great Expectations suite: null checks, distribution drift, and range constraints on the feature vector.",
+      "taskType": "Test",
+      "downstreamTasks": []
+    },
+    {
+      "name": "write_feature_store",
+      "displayName": "Write to Feature Store",
+      "fullyQualifiedName": "Airflow.ml_feature_pipeline.write_feature_store",
+      "description": "Upserts the feature vector into the Feast online/offline feature store.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "concurrency": 3,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.MachineLearning" }
+  ]
+}

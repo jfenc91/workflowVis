@@ -1,0 +1,179 @@
+[
+  {
+    "_comment": "=== fulfillment_flow sub-pipeline START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:02:10.000Z",
+    "run": {
+      "runId": "a0000001-0000-4000-a000-000000000003",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "order_fulfillment_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "fulfillment_flow",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== reserve_inventory START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:02:15.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000021",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000003" },
+          "job": { "namespace": "sfn-prod", "name": "fulfillment_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "fulfillment_flow.reserve_inventory",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:02:50.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000021", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "fulfillment_flow.reserve_inventory" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== create_shipment START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:02:55.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000022",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000003" },
+          "job": { "namespace": "sfn-prod", "name": "fulfillment_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "fulfillment_flow.create_shipment",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:03:40.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000022", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "fulfillment_flow.create_shipment" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== update_order_status START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:03:45.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000023",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000003" },
+          "job": { "namespace": "sfn-prod", "name": "fulfillment_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "fulfillment_flow.update_order_status",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:04:10.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000023", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "fulfillment_flow.update_order_status" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== fulfillment_flow sub-pipeline COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:04:15.000Z",
+    "run": { "runId": "a0000001-0000-4000-a000-000000000003", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "fulfillment_flow" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "_comment": "Valid event — pipeline START",
+    "eventType": "START",
+    "eventTime": "2024-03-22T04:00:00.000Z",
+    "run": { "runId": "bad00000-0000-4000-a000-000000000000", "facets": {} },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "demo_pipeline",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "_comment": "Invalid event — eventType 'BOGUS' is not in the allowed enum",
+    "eventType": "BOGUS",
+    "eventTime": "2024-03-22T04:00:10.000Z",
+    "run": {
+      "runId": "bad00001-aaaa-4000-a000-000000000001",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "bad00000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "demo_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "demo_pipeline.step_one",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

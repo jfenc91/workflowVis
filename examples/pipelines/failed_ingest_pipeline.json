@@ -1,0 +1,88 @@
+{
+  "id": "f1a2b3c4-dead-4bad-beef-000000000001",
+  "name": "daily_ingest_pipeline",
+  "displayName": "Daily Ingest Pipeline",
+  "fullyQualifiedName": "Airflow.daily_ingest_pipeline",
+  "description": "Daily data ingestion pipeline — pulls from APIs and databases, validates, and loads to warehouse.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "fetch_api_events",
+      "displayName": "Fetch API Events",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.fetch_api_events",
+      "description": "Pull event data from the product analytics API.",
+      "taskType": "Extract",
+      "taskSQL": null,
+      "downstreamTasks": ["validate_events"]
+    },
+    {
+      "name": "fetch_payments_db",
+      "displayName": "Fetch Payments DB",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.fetch_payments_db",
+      "description": "Extract payment records from the payments Postgres database.",
+      "taskType": "Extract",
+      "taskSQL": "SELECT * FROM payments.transactions WHERE created_at >= '{{ ds }}'",
+      "downstreamTasks": ["validate_payments"]
+    },
+    {
+      "name": "fetch_crm_export",
+      "displayName": "Fetch CRM Export",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.fetch_crm_export",
+      "description": "Download the daily CRM CSV export from SFTP.",
+      "taskType": "Extract",
+      "downstreamTasks": ["validate_crm"]
+    },
+    {
+      "name": "validate_events",
+      "displayName": "Validate Events",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.validate_events",
+      "description": "Run data quality checks on event data — schema validation, null checks, deduplication.",
+      "taskType": "Test",
+      "downstreamTasks": ["load_to_warehouse"]
+    },
+    {
+      "name": "validate_payments",
+      "displayName": "Validate Payments",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.validate_payments",
+      "description": "Validate payment records — check for missing amounts, invalid currencies, orphan transactions.",
+      "taskType": "Test",
+      "downstreamTasks": ["load_to_warehouse"]
+    },
+    {
+      "name": "validate_crm",
+      "displayName": "Validate CRM",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.validate_crm",
+      "description": "Validate CRM export — check for required fields, email format, duplicate contacts.",
+      "taskType": "Test",
+      "downstreamTasks": ["load_to_warehouse"]
+    },
+    {
+      "name": "load_to_warehouse",
+      "displayName": "Load to Warehouse",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.load_to_warehouse",
+      "description": "Merge validated data into the analytics warehouse.",
+      "taskType": "Load",
+      "taskSQL": "MERGE INTO warehouse.analytics.daily_ingest USING staging.validated_data ON (id = id) WHEN MATCHED THEN UPDATE WHEN NOT MATCHED THEN INSERT",
+      "downstreamTasks": ["notify_team"]
+    },
+    {
+      "name": "notify_team",
+      "displayName": "Notify Team",
+      "fullyQualifiedName": "Airflow.daily_ingest_pipeline.notify_team",
+      "description": "Send Slack notification with ingest summary.",
+      "taskType": "Notification",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": "30 3 * * *",
+  "concurrency": 3,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.DataEngineering" }
+  ]
+}

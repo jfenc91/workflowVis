@@ -1,0 +1,57 @@
+{
+  "id": "b1a2c3d4-2222-4aaa-bbbb-000000000002",
+  "name": "transform_pipeline",
+  "displayName": "Transform Pipeline",
+  "fullyQualifiedName": "Airflow.transform_pipeline",
+  "description": "Transforms staged raw data into clean, business-ready models (dbt-based).",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "dbt_run_staging",
+      "displayName": "dbt run - Staging Models",
+      "fullyQualifiedName": "Airflow.transform_pipeline.dbt_run_staging",
+      "description": "Runs dbt staging models that clean and deduplicate raw data.",
+      "taskType": "Transform",
+      "taskSQL": "dbt run --select tag:staging",
+      "downstreamTasks": ["dbt_run_intermediate"]
+    },
+    {
+      "name": "dbt_run_intermediate",
+      "displayName": "dbt run - Intermediate Models",
+      "fullyQualifiedName": "Airflow.transform_pipeline.dbt_run_intermediate",
+      "description": "Runs intermediate dbt models that join and enrich data across sources.",
+      "taskType": "Transform",
+      "taskSQL": "dbt run --select tag:intermediate",
+      "downstreamTasks": ["dbt_run_marts"]
+    },
+    {
+      "name": "dbt_run_marts",
+      "displayName": "dbt run - Mart Models",
+      "fullyQualifiedName": "Airflow.transform_pipeline.dbt_run_marts",
+      "description": "Runs final mart models consumed by analysts and dashboards.",
+      "taskType": "Transform",
+      "taskSQL": "dbt run --select tag:marts",
+      "downstreamTasks": ["dbt_test"]
+    },
+    {
+      "name": "dbt_test",
+      "displayName": "dbt test",
+      "fullyQualifiedName": "Airflow.transform_pipeline.dbt_test",
+      "description": "Runs dbt tests to validate data quality after transformation.",
+      "taskType": "Test",
+      "taskSQL": "dbt test",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": "0 3 * * *",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.DataEngineering" }
+  ]
+}

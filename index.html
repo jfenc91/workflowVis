@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Pipeline Visualizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    { "imports": { "ajv": "/build/vendor/ajv.js", "ajv/dist/2020": "/build/vendor/ajv-2020.js" } }
+  </script>
+  <script>
+    // Auto-recovery from stale browser cache.
+    // If a module fails to load/parse (stale cached version), clear caches and hard-reload once.
+    (function() {
+      var RELOAD_KEY = '__pv_cache_reload';
+      var lastReload = sessionStorage.getItem(RELOAD_KEY);
+      var now = Date.now();
+
+      // Prevent infinite reload loop: only auto-reload once per 10 seconds
+      var canReload = !lastReload || (now - parseInt(lastReload, 10)) > 10000;
+
+      function handleCacheError(msg) {
+        if (!canReload) {
+          // Already tried reloading recently — show error instead of looping
+          document.body.innerHTML =
+            '<div style="padding:40px;font-family:system-ui;color:#e11d48;max-width:600px;margin:auto">' +
+            '<h2>Failed to load</h2>' +
+            '<p style="color:#64748b">' + msg + '</p>' +
+            '<button onclick="sessionStorage.removeItem(\'' + RELOAD_KEY + '\');location.reload(true)" ' +
+            'style="margin-top:16px;padding:8px 20px;background:#6366f1;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px">' +
+            'Clear cache &amp; reload</button></div>';
+          return;
+        }
+        sessionStorage.setItem(RELOAD_KEY, String(now));
+        // Clear service worker caches if any exist
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            names.forEach(function(name) { caches.delete(name); });
+          });
+        }
+        // Force hard reload (bypass cache)
+        location.reload(true);
+      }
+
+      // Catch module import errors (SyntaxError, TypeError from stale exports)
+      window.addEventListener('error', function(e) {
+        var msg = (e.message || '') + '';
+        // Module-related errors that indicate stale cache
+        if (msg.indexOf('import') !== -1 ||
+            msg.indexOf('export') !== -1 ||
+            msg.indexOf('does not provide') !== -1 ||
+            msg.indexOf('not a function') !== -1 ||
+            msg.indexOf('is not defined') !== -1 ||
+            msg.indexOf('Unexpected token') !== -1) {
+          handleCacheError(msg);
+        }
+      });
+
+      // Catch unhandled promise rejections (dynamic import failures, fetch errors)
+      window.addEventListener('unhandledrejection', function(e) {
+        var msg = (e.reason && (e.reason.message || String(e.reason))) || '';
+        if (msg.indexOf('import') !== -1 ||
+            msg.indexOf('Failed to fetch') !== -1 ||
+            msg.indexOf('loading') !== -1 ||
+            msg.indexOf('module') !== -1) {
+          handleCacheError(msg);
+        }
+      });
+
+      // Clear the reload flag after successful load (2s grace period)
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          sessionStorage.removeItem(RELOAD_KEY);
+        }, 2000);
+      });
+    })();
+  </script>
+</head>
+<body>
+  <div id="app">
+    <div id="toolbar"></div>
+    <div id="main-area">
+      <div id="canvas-container">
+        <canvas id="main-canvas"></canvas>
+        <canvas id="gl-canvas"></canvas>
+      </div>
+      <div id="detail-panel"></div>
+    </div>
+    <div id="timeline"></div>
+  </div>
+  <script type="module" src="build/src/main.js"></script>
+</body>
+</html>

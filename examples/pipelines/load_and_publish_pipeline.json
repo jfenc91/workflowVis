@@ -1,0 +1,53 @@
+{
+  "id": "b1a2c3d4-3333-4aaa-bbbb-000000000003",
+  "name": "load_and_publish_pipeline",
+  "displayName": "Load & Publish Pipeline",
+  "fullyQualifiedName": "Airflow.load_and_publish_pipeline",
+  "description": "Loads final mart data into downstream systems and publishes data quality reports.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "export_to_redshift",
+      "displayName": "Export to Redshift",
+      "fullyQualifiedName": "Airflow.load_and_publish_pipeline.export_to_redshift",
+      "description": "Copies mart tables into the Redshift analytics warehouse.",
+      "taskType": "Load",
+      "downstreamTasks": ["refresh_tableau_extracts"]
+    },
+    {
+      "name": "export_to_elasticsearch",
+      "displayName": "Export to Elasticsearch",
+      "fullyQualifiedName": "Airflow.load_and_publish_pipeline.export_to_elasticsearch",
+      "description": "Indexes customer and order data into Elasticsearch for search.",
+      "taskType": "Load",
+      "downstreamTasks": ["notify_stakeholders"]
+    },
+    {
+      "name": "refresh_tableau_extracts",
+      "displayName": "Refresh Tableau Extracts",
+      "fullyQualifiedName": "Airflow.load_and_publish_pipeline.refresh_tableau_extracts",
+      "description": "Triggers a Tableau extract refresh so dashboards reflect latest data.",
+      "taskType": "Publish",
+      "downstreamTasks": ["notify_stakeholders"]
+    },
+    {
+      "name": "notify_stakeholders",
+      "displayName": "Notify Stakeholders",
+      "fullyQualifiedName": "Airflow.load_and_publish_pipeline.notify_stakeholders",
+      "description": "Sends a Slack notification with data freshness summary and quality report.",
+      "taskType": "Notification",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": "0 5 * * *",
+  "concurrency": 2,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.DataEngineering" }
+  ]
+}

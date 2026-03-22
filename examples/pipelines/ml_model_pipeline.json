@@ -1,0 +1,60 @@
+{
+  "id": "c1c1c1c1-2222-4ccc-dddd-000000000002",
+  "name": "ml_model_pipeline",
+  "displayName": "ML Model Train & Evaluate Pipeline",
+  "fullyQualifiedName": "Airflow.ml_model_pipeline",
+  "description": "Trains the churn prediction model, evaluates it against the champion, and conditionally promotes to production.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "fetch_training_data",
+      "displayName": "Fetch Training Data",
+      "fullyQualifiedName": "Airflow.ml_model_pipeline.fetch_training_data",
+      "description": "Reads the latest feature vector snapshot from the offline feature store and splits into train/validation/test sets.",
+      "taskType": "Extract",
+      "downstreamTasks": ["train_model"]
+    },
+    {
+      "name": "train_model",
+      "displayName": "Train XGBoost Model",
+      "fullyQualifiedName": "Airflow.ml_model_pipeline.train_model",
+      "description": "Trains an XGBoost classifier with Optuna hyperparameter tuning. Logs artifacts to MLflow.",
+      "taskType": "Transform",
+      "downstreamTasks": ["evaluate_model"]
+    },
+    {
+      "name": "evaluate_model",
+      "displayName": "Evaluate Model",
+      "fullyQualifiedName": "Airflow.ml_model_pipeline.evaluate_model",
+      "description": "Computes precision, recall, F1, and AUC-ROC on the held-out test set. Compares against the current champion model.",
+      "taskType": "Test",
+      "downstreamTasks": ["promote_model", "register_model"]
+    },
+    {
+      "name": "register_model",
+      "displayName": "Register Model in MLflow",
+      "fullyQualifiedName": "Airflow.ml_model_pipeline.register_model",
+      "description": "Registers the new model version in the MLflow model registry regardless of promotion decision.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    },
+    {
+      "name": "promote_model",
+      "displayName": "Promote to Production",
+      "fullyQualifiedName": "Airflow.ml_model_pipeline.promote_model",
+      "description": "If the challenger beats the champion on AUC-ROC by >= 0.5%, transitions it to the Production stage in MLflow.",
+      "taskType": "Publish",
+      "downstreamTasks": []
+    }
+  ],
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.MachineLearning" }
+  ]
+}

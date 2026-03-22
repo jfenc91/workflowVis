@@ -1,0 +1,84 @@
+{
+  "id": "d2000001-0000-4aaa-bbbb-000000000001",
+  "name": "media_processing_workflow",
+  "displayName": "Media Processing Workflow",
+  "fullyQualifiedName": "StepFunctions.media_processing_workflow",
+  "description": "Top-level state machine for media processing. Ingests media, transcodes in parallel, publishes to CDN, and sends notifications.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "ingest_media",
+      "displayName": "Ingest Media",
+      "fullyQualifiedName": "StepFunctions.media_processing_workflow.ingest_media",
+      "description": "Downloads the source media file from the upload bucket and validates format/codec.",
+      "taskType": "Extract",
+      "downstreamTasks": ["StepFunctions.transcode_flow"]
+    },
+    {
+      "name": "StepFunctions.transcode_flow",
+      "displayName": "Run Transcode Flow",
+      "fullyQualifiedName": "StepFunctions.media_processing_workflow.StepFunctions.transcode_flow",
+      "description": "Triggers the parallel transcoding sub-workflow to produce 720p, 1080p, and 4K renditions.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["publish_to_cdn"]
+    },
+    {
+      "name": "publish_to_cdn",
+      "displayName": "Publish to CDN",
+      "fullyQualifiedName": "StepFunctions.media_processing_workflow.publish_to_cdn",
+      "description": "Publishes all renditions to the CDN edge locations and invalidates cache.",
+      "taskType": "Publish",
+      "downstreamTasks": ["notify_complete"]
+    },
+    {
+      "name": "notify_complete",
+      "displayName": "Notify Complete",
+      "fullyQualifiedName": "StepFunctions.media_processing_workflow.notify_complete",
+      "description": "Sends a webhook notification that the media is ready for streaming.",
+      "taskType": "Notification",
+      "downstreamTasks": []
+    }
+  ],
+  "pipelineStatus": {
+    "timestamp": 1713190280000,
+    "executionStatus": "Successful",
+    "taskStatus": [
+      {
+        "name": "ingest_media",
+        "executionStatus": "Successful",
+        "startTime": 1713189605000,
+        "endTime": 1713189720000
+      },
+      {
+        "name": "StepFunctions.transcode_flow",
+        "executionStatus": "Successful",
+        "startTime": 1713189725000,
+        "endTime": 1713190205000
+      },
+      {
+        "name": "publish_to_cdn",
+        "executionStatus": "Successful",
+        "startTime": 1713190210000,
+        "endTime": 1713190260000
+      },
+      {
+        "name": "notify_complete",
+        "executionStatus": "Successful",
+        "startTime": 1713190265000,
+        "endTime": 1713190275000
+      }
+    ]
+  },
+  "scheduleInterval": "event-driven",
+  "concurrency": 5,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.Media" },
+    { "tagFQN": "PipelinePattern.Orchestrator" }
+  ]
+}

@@ -1,0 +1,418 @@
+[
+  {
+    "_comment": "=== Pipeline START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:30:00.000Z",
+    "run": { "runId": "dead0000-0000-4000-a000-000000000000", "facets": {} },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "daily_ingest_pipeline",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Extract: API Events START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:30:05.000Z",
+    "run": {
+      "runId": "dead0001-aaaa-4000-a000-000000000001",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "dead0000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.fetch_api_events" },
+    "inputs": [
+      {
+        "namespace": "https://api.product.internal",
+        "name": "events/v2/stream",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "event_id", "type": "VARCHAR(36)" },
+              { "name": "user_id", "type": "BIGINT" },
+              { "name": "event_type", "type": "VARCHAR(50)" },
+              { "name": "timestamp", "type": "TIMESTAMP" },
+              { "name": "properties", "type": "TEXT" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "s3://raw-data-prod",
+        "name": "landing/events/dt=2024-03-22/events.jsonl",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "event_id", "type": "VARCHAR(36)" },
+              { "name": "user_id", "type": "BIGINT" },
+              { "name": "event_type", "type": "VARCHAR(50)" },
+              { "name": "timestamp", "type": "TIMESTAMP" },
+              { "name": "properties", "type": "TEXT" }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Extract: Payments DB START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:30:05.000Z",
+    "run": {
+      "runId": "dead0001-aaaa-4000-a000-000000000002",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "dead0000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "daily_ingest_pipeline.fetch_payments_db",
+      "facets": {
+        "sql": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-0/SQLJobFacet.json",
+          "query": "SELECT * FROM payments.transactions WHERE created_at >= '2024-03-22'"
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgres://payments-db.internal:5432",
+        "name": "payments.public.transactions",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "transaction_id", "type": "BIGINT" },
+              { "name": "customer_id", "type": "BIGINT" },
+              { "name": "amount", "type": "NUMERIC(12,2)" },
+              { "name": "currency", "type": "VARCHAR(3)" },
+              { "name": "status", "type": "VARCHAR(20)" },
+              { "name": "created_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "staging.raw_payments",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "transaction_id", "type": "BIGINT" },
+              { "name": "customer_id", "type": "BIGINT" },
+              { "name": "amount", "type": "NUMERIC(12,2)" },
+              { "name": "currency", "type": "VARCHAR(3)" },
+              { "name": "status", "type": "VARCHAR(20)" },
+              { "name": "created_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Extract: CRM Export START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:30:06.000Z",
+    "run": {
+      "runId": "dead0001-aaaa-4000-a000-000000000003",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "dead0000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.fetch_crm_export" },
+    "inputs": [
+      { "namespace": "sftp://crm-exports.partner.com", "name": "exports/daily/2024-03-22/contacts.csv" }
+    ],
+    "outputs": [
+      { "namespace": "s3://raw-data-prod", "name": "landing/crm/dt=2024-03-22/contacts.csv" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Extract: API Events COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T03:32:30.000Z",
+    "run": { "runId": "dead0001-aaaa-4000-a000-000000000001", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.fetch_api_events" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "s3://raw-data-prod",
+        "name": "landing/events/dt=2024-03-22/events.jsonl",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 284591,
+            "size": 67108864
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Extract: Payments DB COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T03:33:00.000Z",
+    "run": { "runId": "dead0001-aaaa-4000-a000-000000000002", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.fetch_payments_db" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "staging.raw_payments",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 12847,
+            "size": 4194304
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Extract: CRM Export COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T03:33:15.000Z",
+    "run": { "runId": "dead0001-aaaa-4000-a000-000000000003", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.fetch_crm_export" },
+    "inputs": [],
+    "outputs": [
+      { "namespace": "s3://raw-data-prod", "name": "landing/crm/dt=2024-03-22/contacts.csv" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Validate: Events START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:33:20.000Z",
+    "run": {
+      "runId": "dead0002-aaaa-4000-a000-000000000004",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "dead0000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.validate_events" },
+    "inputs": [
+      {
+        "namespace": "s3://raw-data-prod",
+        "name": "landing/events/dt=2024-03-22/events.jsonl",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "event_id", "type": "VARCHAR(36)" },
+              { "name": "user_id", "type": "BIGINT" },
+              { "name": "event_type", "type": "VARCHAR(50)" },
+              { "name": "timestamp", "type": "TIMESTAMP" },
+              { "name": "properties", "type": "TEXT" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Validate: Payments START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:33:20.000Z",
+    "run": {
+      "runId": "dead0002-aaaa-4000-a000-000000000005",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "dead0000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.validate_payments" },
+    "inputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "staging.raw_payments",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "transaction_id", "type": "BIGINT" },
+              { "name": "customer_id", "type": "BIGINT" },
+              { "name": "amount", "type": "NUMERIC(12,2)" },
+              { "name": "currency", "type": "VARCHAR(3)" },
+              { "name": "status", "type": "VARCHAR(20)" },
+              { "name": "created_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Validate: CRM START ===",
+    "eventType": "START",
+    "eventTime": "2024-03-22T03:33:21.000Z",
+    "run": {
+      "runId": "dead0002-aaaa-4000-a000-000000000006",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "dead0000-0000-4000-a000-000000000000" },
+          "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.validate_crm" },
+    "inputs": [
+      { "namespace": "s3://raw-data-prod", "name": "landing/crm/dt=2024-03-22/contacts.csv" }
+    ],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Validate: Events COMPLETE (passes) ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T03:34:00.000Z",
+    "run": { "runId": "dead0002-aaaa-4000-a000-000000000004", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.validate_events" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Validate: Payments FAILS — 847 orphan transactions detected ===",
+    "eventType": "FAIL",
+    "eventTime": "2024-03-22T03:34:30.000Z",
+    "run": {
+      "runId": "dead0002-aaaa-4000-a000-000000000005",
+      "facets": {
+        "errorMessage": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-0/ErrorMessageRunFacet.json",
+          "message": "Data quality check failed: 847 orphan transactions found (customer_id not in dim_customers). Null amount detected in 23 records. Threshold exceeded.",
+          "programmingLanguage": "PYTHON",
+          "stackTrace": "Traceback (most recent call last):\n  File \"/opt/airflow/dags/ingest/validate_payments.py\", line 89, in execute\n    results = self.run_quality_checks(df)\n  File \"/opt/airflow/dags/ingest/validate_payments.py\", line 112, in run_quality_checks\n    orphan_count = df[~df['customer_id'].isin(valid_customers)].shape[0]\n  File \"/opt/airflow/dags/ingest/validate_payments.py\", line 128, in run_quality_checks\n    raise DataQualityError(\n      f\"{orphan_count} orphan transactions found, {null_amount_count} null amounts. \"\n      f\"Exceeds threshold of 100 orphans / 0 null amounts.\"\n    )\ningest.exceptions.DataQualityError: 847 orphan transactions found, 23 null amounts. Exceeds threshold of 100 orphans / 0 null amounts."
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.validate_payments" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Validate: CRM COMPLETE (passes) ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T03:34:45.000Z",
+    "run": { "runId": "dead0002-aaaa-4000-a000-000000000006", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline.validate_crm" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Pipeline FAILS (validate_payments failed, downstream tasks never run) ===",
+    "eventType": "FAIL",
+    "eventTime": "2024-03-22T03:35:00.000Z",
+    "run": {
+      "runId": "dead0000-0000-4000-a000-000000000000",
+      "facets": {
+        "errorMessage": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-0/ErrorMessageRunFacet.json",
+          "message": "Pipeline failed: validate_payments task failed with DataQualityError. Downstream tasks (load_to_warehouse, notify_team) skipped.",
+          "programmingLanguage": "PYTHON",
+          "stackTrace": null
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "daily_ingest_pipeline" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

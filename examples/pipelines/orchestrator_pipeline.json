@@ -1,0 +1,70 @@
+{
+  "id": "a0a0a0a0-0000-4aaa-bbbb-000000000000",
+  "name": "orchestrator_daily_pipeline",
+  "displayName": "Daily Data Orchestrator",
+  "fullyQualifiedName": "Airflow.orchestrator_daily_pipeline",
+  "description": "Top-level pipeline that orchestrates the full daily ELT workflow. Each task is a sub-pipeline that runs as an independent DAG.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "Airflow.extract_pipeline",
+      "displayName": "Run Extract Pipeline",
+      "fullyQualifiedName": "Airflow.orchestrator_daily_pipeline.Airflow.extract_pipeline",
+      "description": "Triggers the extract sub-pipeline that pulls data from Postgres and S3 into the staging layer.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["Airflow.transform_pipeline"]
+    },
+    {
+      "name": "Airflow.transform_pipeline",
+      "displayName": "Run Transform Pipeline",
+      "fullyQualifiedName": "Airflow.orchestrator_daily_pipeline.Airflow.transform_pipeline",
+      "description": "Triggers the dbt-based transform sub-pipeline that produces clean mart models.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["Airflow.load_and_publish_pipeline"]
+    },
+    {
+      "name": "Airflow.load_and_publish_pipeline",
+      "displayName": "Run Load & Publish Pipeline",
+      "fullyQualifiedName": "Airflow.orchestrator_daily_pipeline.Airflow.load_and_publish_pipeline",
+      "description": "Triggers the load sub-pipeline that exports marts to Redshift/ES and refreshes dashboards.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": []
+    }
+  ],
+  "pipelineStatus": {
+    "timestamp": 1711065600000,
+    "executionStatus": "Successful",
+    "taskStatus": [
+      {
+        "name": "Airflow.extract_pipeline",
+        "executionStatus": "Successful",
+        "startTime": 1711058400000,
+        "endTime": 1711060200000
+      },
+      {
+        "name": "Airflow.transform_pipeline",
+        "executionStatus": "Successful",
+        "startTime": 1711060200000,
+        "endTime": 1711062000000
+      },
+      {
+        "name": "Airflow.load_and_publish_pipeline",
+        "executionStatus": "Successful",
+        "startTime": 1711062000000,
+        "endTime": 1711065600000
+      }
+    ]
+  },
+  "scheduleInterval": "0 2 * * *",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.DataEngineering" },
+    { "tagFQN": "PipelinePattern.Orchestrator" }
+  ]
+}

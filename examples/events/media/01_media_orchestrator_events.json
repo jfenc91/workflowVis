@@ -1,0 +1,202 @@
+[
+  {
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:00:00.000Z",
+    "run": {
+      "runId": "b0000002-0000-4000-a000-000000000001",
+      "facets": {
+        "nominalTime": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/NominalTimeRunFacet.json",
+          "nominalStartTime": "2024-04-15T14:00:00.000Z",
+          "nominalEndTime": "2024-04-15T14:15:00.000Z"
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "media_processing_workflow",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== ingest_media START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:00:05.000Z",
+    "run": {
+      "runId": "b0000002-aaaa-4000-a000-000000000011",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "media_processing_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "media_processing_workflow.ingest_media",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      { "namespace": "s3://media-uploads-prod", "name": "uploads/2024-04-15/video_raw_001.mp4" }
+    ],
+    "outputs": [
+      { "namespace": "s3://media-processing-prod", "name": "staging/2024-04-15/video_raw_001.mp4" }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:02:00.000Z",
+    "run": { "runId": "b0000002-aaaa-4000-a000-000000000011", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "media_processing_workflow.ingest_media" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "s3://media-processing-prod",
+        "name": "staging/2024-04-15/video_raw_001.mp4",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1,
+            "size": 2147483648
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== publish_to_cdn START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:10:10.000Z",
+    "run": {
+      "runId": "b0000002-aaaa-4000-a000-000000000031",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "media_processing_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "media_processing_workflow.publish_to_cdn",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      { "namespace": "s3://media-processing-prod", "name": "output/2024-04-15/video_001_720p.mp4" },
+      { "namespace": "s3://media-processing-prod", "name": "output/2024-04-15/video_001_1080p.mp4" },
+      { "namespace": "s3://media-processing-prod", "name": "output/2024-04-15/video_001_4k.mp4" }
+    ],
+    "outputs": [
+      { "namespace": "cdn://media-cdn.example.com", "name": "videos/video_001/" }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:11:00.000Z",
+    "run": { "runId": "b0000002-aaaa-4000-a000-000000000031", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "media_processing_workflow.publish_to_cdn" },
+    "inputs": [],
+    "outputs": [
+      { "namespace": "cdn://media-cdn.example.com", "name": "videos/video_001/" }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== notify_complete START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:11:05.000Z",
+    "run": {
+      "runId": "b0000002-aaaa-4000-a000-000000000041",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "media_processing_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "media_processing_workflow.notify_complete",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:11:15.000Z",
+    "run": { "runId": "b0000002-aaaa-4000-a000-000000000041", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "media_processing_workflow.notify_complete" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:11:20.000Z",
+    "run": { "runId": "b0000002-0000-4000-a000-000000000001", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "media_processing_workflow" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

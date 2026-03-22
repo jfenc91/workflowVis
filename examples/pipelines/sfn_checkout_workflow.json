@@ -1,0 +1,97 @@
+{
+  "id": "d3000001-0000-4aaa-bbbb-000000000001",
+  "name": "checkout_workflow",
+  "displayName": "Checkout Workflow",
+  "fullyQualifiedName": "StepFunctions.checkout_workflow",
+  "description": "Flat checkout pipeline — validates cart, processes payment (with retry on decline), reserves inventory, confirms, and updates analytics.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "validate_cart",
+      "displayName": "Validate Cart",
+      "fullyQualifiedName": "StepFunctions.checkout_workflow.validate_cart",
+      "description": "Validates cart contents — checks item availability, pricing, and promo code validity.",
+      "taskType": "Test",
+      "downstreamTasks": ["process_payment"]
+    },
+    {
+      "name": "process_payment",
+      "displayName": "Process Payment",
+      "fullyQualifiedName": "StepFunctions.checkout_workflow.process_payment",
+      "description": "Charges the customer's payment method via the payment gateway.",
+      "taskType": "Transform",
+      "downstreamTasks": ["reserve_inventory"]
+    },
+    {
+      "name": "reserve_inventory",
+      "displayName": "Reserve Inventory",
+      "fullyQualifiedName": "StepFunctions.checkout_workflow.reserve_inventory",
+      "description": "Reserves inventory for the purchased items in the warehouse system.",
+      "taskType": "Load",
+      "downstreamTasks": ["send_confirmation"]
+    },
+    {
+      "name": "send_confirmation",
+      "displayName": "Send Confirmation",
+      "fullyQualifiedName": "StepFunctions.checkout_workflow.send_confirmation",
+      "description": "Sends order confirmation email with receipt and estimated delivery.",
+      "taskType": "Notification",
+      "downstreamTasks": ["update_analytics"]
+    },
+    {
+      "name": "update_analytics",
+      "displayName": "Update Analytics",
+      "fullyQualifiedName": "StepFunctions.checkout_workflow.update_analytics",
+      "description": "Publishes checkout completion event to the analytics pipeline.",
+      "taskType": "Publish",
+      "downstreamTasks": []
+    }
+  ],
+  "pipelineStatus": {
+    "timestamp": 1713204160000,
+    "executionStatus": "Successful",
+    "taskStatus": [
+      {
+        "name": "validate_cart",
+        "executionStatus": "Successful",
+        "startTime": 1713204005000,
+        "endTime": 1713204030000
+      },
+      {
+        "name": "process_payment",
+        "executionStatus": "Successful",
+        "startTime": 1713204060000,
+        "endTime": 1713204080000
+      },
+      {
+        "name": "reserve_inventory",
+        "executionStatus": "Successful",
+        "startTime": 1713204085000,
+        "endTime": 1713204110000
+      },
+      {
+        "name": "send_confirmation",
+        "executionStatus": "Successful",
+        "startTime": 1713204115000,
+        "endTime": 1713204130000
+      },
+      {
+        "name": "update_analytics",
+        "executionStatus": "Successful",
+        "startTime": 1713204135000,
+        "endTime": 1713204155000
+      }
+    ]
+  },
+  "scheduleInterval": "event-driven",
+  "concurrency": 10,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.Commerce" }
+  ]
+}

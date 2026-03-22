@@ -1,0 +1,44 @@
+[
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-24T01:00:00.000Z",
+    "run": {
+      "runId": "e4f5a6b7-c8d9-4e0f-1a2b-3c4d5e6f7a8b",
+      "facets": {
+        "nominalTime": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/NominalTimeRunFacet.json",
+          "nominalStartTime": "2024-03-24T01:00:00.000Z",
+          "nominalEndTime": "2024-03-24T06:00:00.000Z"
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "ml_churn_training_pipeline",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T05:02:10.000Z",
+    "run": { "runId": "e4f5a6b7-c8d9-4e0f-1a2b-3c4d5e6f7a8b", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_churn_training_pipeline" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

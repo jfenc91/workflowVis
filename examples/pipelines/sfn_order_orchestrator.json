@@ -1,0 +1,70 @@
+{
+  "id": "d1000001-0000-4aaa-bbbb-000000000001",
+  "name": "order_fulfillment_workflow",
+  "displayName": "Order Fulfillment Workflow",
+  "fullyQualifiedName": "StepFunctions.order_fulfillment_workflow",
+  "description": "Top-level state machine that orchestrates order processing. Validates payment, fulfills the order, then notifies the customer.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "StepFunctions.payment_flow",
+      "displayName": "Run Payment Flow",
+      "fullyQualifiedName": "StepFunctions.order_fulfillment_workflow.StepFunctions.payment_flow",
+      "description": "Triggers the payment processing sub-workflow to validate, charge, and record the transaction.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["StepFunctions.fulfillment_flow"]
+    },
+    {
+      "name": "StepFunctions.fulfillment_flow",
+      "displayName": "Run Fulfillment Flow",
+      "fullyQualifiedName": "StepFunctions.order_fulfillment_workflow.StepFunctions.fulfillment_flow",
+      "description": "Triggers the fulfillment sub-workflow to reserve inventory, create shipment, and update order status.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["notify_customer"]
+    },
+    {
+      "name": "notify_customer",
+      "displayName": "Notify Customer",
+      "fullyQualifiedName": "StepFunctions.order_fulfillment_workflow.notify_customer",
+      "description": "Sends order confirmation email and SMS to the customer with tracking details.",
+      "taskType": "Notification",
+      "downstreamTasks": []
+    }
+  ],
+  "pipelineStatus": {
+    "timestamp": 1713175475000,
+    "executionStatus": "Successful",
+    "taskStatus": [
+      {
+        "name": "StepFunctions.payment_flow",
+        "executionStatus": "Successful",
+        "startTime": 1713175205000,
+        "endTime": 1713175325000
+      },
+      {
+        "name": "StepFunctions.fulfillment_flow",
+        "executionStatus": "Successful",
+        "startTime": 1713175330000,
+        "endTime": 1713175455000
+      },
+      {
+        "name": "notify_customer",
+        "executionStatus": "Successful",
+        "startTime": 1713175460000,
+        "endTime": 1713175470000
+      }
+    ]
+  },
+  "scheduleInterval": "event-driven",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.Commerce" },
+    { "tagFQN": "PipelinePattern.Orchestrator" }
+  ]
+}

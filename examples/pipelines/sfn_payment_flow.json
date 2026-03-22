@@ -1,0 +1,44 @@
+{
+  "id": "d1000001-0000-4aaa-bbbb-000000000002",
+  "name": "payment_flow",
+  "displayName": "Payment Flow",
+  "fullyQualifiedName": "StepFunctions.payment_flow",
+  "description": "Sub-workflow handling payment processing — validates the payment method, charges the card, and records the transaction.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "validate_payment",
+      "displayName": "Validate Payment",
+      "fullyQualifiedName": "StepFunctions.payment_flow.validate_payment",
+      "description": "Validates the payment method — checks card expiry, billing address, and fraud score.",
+      "taskType": "Test",
+      "downstreamTasks": ["charge_card"]
+    },
+    {
+      "name": "charge_card",
+      "displayName": "Charge Card",
+      "fullyQualifiedName": "StepFunctions.payment_flow.charge_card",
+      "description": "Submits the charge to the payment gateway and waits for authorization.",
+      "taskType": "Transform",
+      "downstreamTasks": ["record_transaction"]
+    },
+    {
+      "name": "record_transaction",
+      "displayName": "Record Transaction",
+      "fullyQualifiedName": "StepFunctions.payment_flow.record_transaction",
+      "description": "Writes the authorized transaction to the payments ledger.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.Commerce" }
+  ]
+}

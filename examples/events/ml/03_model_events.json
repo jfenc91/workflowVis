@@ -1,0 +1,468 @@
+[
+  {
+    "_comment": "=== ATTEMPT 1: model training FAILS due to OOM ===",
+    "eventType": "START",
+    "eventTime": "2024-03-24T01:28:10.000Z",
+    "run": {
+      "runId": "a6b7c8d9-e0f1-4a2b-3c4d-5e6f7a8b9c0d",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "e4f5a6b7-c8d9-4e0f-1a2b-3c4d5e6f7a8b" },
+          "job": { "namespace": "airflow-prod", "name": "ml_churn_training_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "ml_model_pipeline",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-24T01:28:15.000Z",
+    "run": {
+      "runId": "aa000001-aaaa-4bbb-cccc-ddddeeee0001",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a6b7c8d9-e0f1-4a2b-3c4d-5e6f7a8b9c0d" },
+          "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.fetch_training_data" },
+    "inputs": [
+      {
+        "namespace": "feast://feature-store.internal",
+        "name": "churn_prediction.user_features"
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "s3://ml-artifacts-prod",
+        "name": "datasets/churn/2024-03-24/train.parquet",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "user_id", "type": "BIGINT" },
+              { "name": "login_count_7d", "type": "INTEGER" },
+              { "name": "login_count_30d", "type": "INTEGER" },
+              { "name": "login_count_90d", "type": "INTEGER" },
+              { "name": "avg_session_seconds_30d", "type": "DOUBLE" },
+              { "name": "page_views_30d", "type": "INTEGER" },
+              { "name": "days_since_last_purchase", "type": "INTEGER" },
+              { "name": "purchase_count_90d", "type": "INTEGER" },
+              { "name": "total_spend_90d", "type": "DOUBLE" },
+              { "name": "avg_order_value", "type": "DOUBLE" },
+              { "name": "open_ticket_count", "type": "INTEGER" },
+              { "name": "avg_resolution_hours", "type": "DOUBLE" },
+              { "name": "escalation_rate", "type": "DOUBLE" },
+              { "name": "churned", "type": "BOOLEAN" }
+            ]
+          }
+        }
+      },
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/validation.parquet" },
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/test.parquet" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T01:35:00.000Z",
+    "run": { "runId": "aa000001-aaaa-4bbb-cccc-ddddeeee0001", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.fetch_training_data" },
+    "inputs": [
+      { "namespace": "feast://feature-store.internal", "name": "churn_prediction.user_features" }
+    ],
+    "outputs": [
+      {
+        "namespace": "s3://ml-artifacts-prod",
+        "name": "datasets/churn/2024-03-24/train.parquet",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 2378,
+            "size": 786432
+          }
+        }
+      },
+      {
+        "namespace": "s3://ml-artifacts-prod",
+        "name": "datasets/churn/2024-03-24/validation.parquet",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 510,
+            "size": 163840
+          }
+        }
+      },
+      {
+        "namespace": "s3://ml-artifacts-prod",
+        "name": "datasets/churn/2024-03-24/test.parquet",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 510,
+            "size": 163840
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-24T01:35:05.000Z",
+    "run": {
+      "runId": "aa000001-aaaa-4bbb-cccc-ddddeeee0002",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a6b7c8d9-e0f1-4a2b-3c4d-5e6f7a8b9c0d" },
+          "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.train_model" },
+    "inputs": [
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/train.parquet" },
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/validation.parquet" }
+    ],
+    "outputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-1" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "_comment": "Training FAILS with OOM during Optuna hyperparameter search",
+    "eventType": "FAIL",
+    "eventTime": "2024-03-24T02:45:00.000Z",
+    "run": {
+      "runId": "aa000001-aaaa-4bbb-cccc-ddddeeee0002",
+      "facets": {
+        "errorMessage": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ErrorMessageRunFacet.json",
+          "message": "MemoryError: Unable to allocate 12.4 GiB for XGBoost DMatrix with n_estimators=8000",
+          "programmingLanguage": "PYTHON",
+          "stackTrace": "Traceback (most recent call last):\n  File \"/opt/airflow/dags/ml/train_xgboost.py\", line 142, in train\n    model = xgb.XGBClassifier(**trial_params).fit(X_train, y_train)\n  File \"/opt/venv/lib/python3.11/site-packages/xgboost/core.py\", line 620, in fit\n    dtrain = DMatrix(X, label=y)\nMemoryError: Unable to allocate 12.4 GiB array. Worker node has 8 GiB available."
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.train_model" },
+    "inputs": [
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/train.parquet" },
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/validation.parquet" }
+    ],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "Sub-pipeline FAILs because its child task failed",
+    "eventType": "FAIL",
+    "eventTime": "2024-03-24T02:45:05.000Z",
+    "run": {
+      "runId": "a6b7c8d9-e0f1-4a2b-3c4d-5e6f7a8b9c0d",
+      "facets": {
+        "errorMessage": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ErrorMessageRunFacet.json",
+          "message": "Task ml_model_pipeline.train_model failed: MemoryError",
+          "programmingLanguage": "PYTHON"
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== ATTEMPT 2: retry with capped n_estimators — SUCCEEDS ===",
+    "eventType": "START",
+    "eventTime": "2024-03-24T03:00:00.000Z",
+    "run": {
+      "runId": "b7c8d9e0-f1a2-4b3c-4d5e-6f7a8b9c0d1e",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "e4f5a6b7-c8d9-4e0f-1a2b-3c4d5e6f7a8b" },
+          "job": { "namespace": "airflow-prod", "name": "ml_churn_training_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "ml_model_pipeline",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "Skips fetch_training_data on retry — data already exists from attempt 1",
+    "eventType": "START",
+    "eventTime": "2024-03-24T03:00:05.000Z",
+    "run": {
+      "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0002",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b7c8d9e0-f1a2-4b3c-4d5e-6f7a8b9c0d1e" },
+          "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.train_model" },
+    "inputs": [
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/train.parquet" },
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/validation.parquet" }
+    ],
+    "outputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-2" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T04:15:00.000Z",
+    "run": { "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0002", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.train_model" },
+    "inputs": [
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/train.parquet" },
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/validation.parquet" }
+    ],
+    "outputs": [
+      {
+        "namespace": "mlflow://mlflow.internal",
+        "name": "experiments/churn-prediction/runs/attempt-2",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1,
+            "size": 4194304
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-24T04:15:05.000Z",
+    "run": {
+      "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0003",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b7c8d9e0-f1a2-4b3c-4d5e-6f7a8b9c0d1e" },
+          "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.evaluate_model" },
+    "inputs": [
+      { "namespace": "s3://ml-artifacts-prod", "name": "datasets/churn/2024-03-24/test.parquet" },
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-2" }
+    ],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T04:25:00.000Z",
+    "run": { "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0003", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.evaluate_model" },
+    "inputs": [
+      {
+        "namespace": "s3://ml-artifacts-prod",
+        "name": "datasets/churn/2024-03-24/test.parquet",
+        "inputFacets": {
+          "dataQualityMetrics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/DataQualityMetricsInputDatasetFacet.json",
+            "rowCount": 510,
+            "columnMetrics": {
+              "churned": { "nullCount": 0, "distinctCount": 2 }
+            }
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "mlflow://mlflow.internal",
+        "name": "experiments/churn-prediction/runs/attempt-2/metrics",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "precision", "type": "DOUBLE", "description": "0.847" },
+              { "name": "recall", "type": "DOUBLE", "description": "0.812" },
+              { "name": "f1_score", "type": "DOUBLE", "description": "0.829" },
+              { "name": "auc_roc", "type": "DOUBLE", "description": "0.891" },
+              { "name": "champion_auc_roc", "type": "DOUBLE", "description": "0.883" }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-24T04:25:05.000Z",
+    "run": {
+      "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0004",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b7c8d9e0-f1a2-4b3c-4d5e-6f7a8b9c0d1e" },
+          "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.register_model" },
+    "inputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-2" }
+    ],
+    "outputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "models/churn-xgboost/versions/14" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-24T04:25:05.000Z",
+    "run": {
+      "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0005",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b7c8d9e0-f1a2-4b3c-4d5e-6f7a8b9c0d1e" },
+          "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.promote_model" },
+    "inputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-2/metrics" }
+    ],
+    "outputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "models/churn-xgboost/production" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "_comment": "Challenger AUC-ROC 0.891 beats champion 0.883 by 0.8% (> 0.5% threshold) — promoted",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T04:30:00.000Z",
+    "run": { "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0005", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.promote_model" },
+    "inputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-2/metrics" }
+    ],
+    "outputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "models/churn-xgboost/production" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T04:28:00.000Z",
+    "run": { "runId": "bb000002-aaaa-4bbb-cccc-ddddeeee0004", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline.register_model" },
+    "inputs": [
+      { "namespace": "mlflow://mlflow.internal", "name": "experiments/churn-prediction/runs/attempt-2" }
+    ],
+    "outputs": [
+      {
+        "namespace": "mlflow://mlflow.internal",
+        "name": "models/churn-xgboost/versions/14",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1,
+            "size": 4194304
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-24T04:30:05.000Z",
+    "run": { "runId": "b7c8d9e0-f1a2-4b3c-4d5e-6f7a8b9c0d1e", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "ml_model_pipeline" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

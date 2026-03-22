@@ -1,0 +1,179 @@
+[
+  {
+    "_comment": "=== payment_flow sub-pipeline START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:00:05.000Z",
+    "run": {
+      "runId": "a0000001-0000-4000-a000-000000000002",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "order_fulfillment_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "payment_flow",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== validate_payment START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:00:10.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000011",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000002" },
+          "job": { "namespace": "sfn-prod", "name": "payment_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "payment_flow.validate_payment",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:00:45.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000011", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "payment_flow.validate_payment" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== charge_card START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:00:50.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000012",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000002" },
+          "job": { "namespace": "sfn-prod", "name": "payment_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "payment_flow.charge_card",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:01:30.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000012", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "payment_flow.charge_card" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== record_transaction START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:01:35.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000013",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000002" },
+          "job": { "namespace": "sfn-prod", "name": "payment_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "payment_flow.record_transaction",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:02:00.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000013", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "payment_flow.record_transaction" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== payment_flow sub-pipeline COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:02:05.000Z",
+    "run": { "runId": "a0000001-0000-4000-a000-000000000002", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "payment_flow" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

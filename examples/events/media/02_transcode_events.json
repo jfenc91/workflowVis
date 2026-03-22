@@ -1,0 +1,228 @@
+[
+  {
+    "_comment": "=== transcode_flow sub-pipeline START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:02:05.000Z",
+    "run": {
+      "runId": "b0000002-0000-4000-a000-000000000002",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "media_processing_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "transcode_flow",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== All 3 transcode tasks START in parallel (fan-out) ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:02:10.000Z",
+    "run": {
+      "runId": "b0000002-aaaa-4000-a000-000000000021",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000002" },
+          "job": { "namespace": "sfn-prod", "name": "transcode_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "transcode_flow.transcode_720p",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      { "namespace": "s3://media-processing-prod", "name": "staging/2024-04-15/video_raw_001.mp4" }
+    ],
+    "outputs": [
+      { "namespace": "s3://media-processing-prod", "name": "output/2024-04-15/video_001_720p.mp4" }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:02:10.000Z",
+    "run": {
+      "runId": "b0000002-aaaa-4000-a000-000000000022",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000002" },
+          "job": { "namespace": "sfn-prod", "name": "transcode_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "transcode_flow.transcode_1080p",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      { "namespace": "s3://media-processing-prod", "name": "staging/2024-04-15/video_raw_001.mp4" }
+    ],
+    "outputs": [
+      { "namespace": "s3://media-processing-prod", "name": "output/2024-04-15/video_001_1080p.mp4" }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "START",
+    "eventTime": "2024-04-15T14:02:10.000Z",
+    "run": {
+      "runId": "b0000002-aaaa-4000-a000-000000000023",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "b0000002-0000-4000-a000-000000000002" },
+          "job": { "namespace": "sfn-prod", "name": "transcode_flow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "transcode_flow.transcode_4k",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      { "namespace": "s3://media-processing-prod", "name": "staging/2024-04-15/video_raw_001.mp4" }
+    ],
+    "outputs": [
+      { "namespace": "s3://media-processing-prod", "name": "output/2024-04-15/video_001_4k.mp4" }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Staggered COMPLETEs: 720p finishes first, then 1080p, then 4K ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:04:00.000Z",
+    "run": { "runId": "b0000002-aaaa-4000-a000-000000000021", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "transcode_flow.transcode_720p" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "s3://media-processing-prod",
+        "name": "output/2024-04-15/video_001_720p.mp4",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1,
+            "size": 524288000
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:06:00.000Z",
+    "run": { "runId": "b0000002-aaaa-4000-a000-000000000022", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "transcode_flow.transcode_1080p" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "s3://media-processing-prod",
+        "name": "output/2024-04-15/video_001_1080p.mp4",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1,
+            "size": 1073741824
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:10:00.000Z",
+    "run": { "runId": "b0000002-aaaa-4000-a000-000000000023", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "transcode_flow.transcode_4k" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "s3://media-processing-prod",
+        "name": "output/2024-04-15/video_001_4k.mp4",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1,
+            "size": 4294967296
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== transcode_flow sub-pipeline COMPLETE (all branches done) ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T14:10:05.000Z",
+    "run": { "runId": "b0000002-0000-4000-a000-000000000002", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "transcode_flow" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

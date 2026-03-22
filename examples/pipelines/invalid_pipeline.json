@@ -1,0 +1,32 @@
+{
+  "_comment": "Invalid pipeline — missing required 'id' field, 'service' missing required 'type'",
+  "name": "broken_pipeline",
+  "displayName": "Broken Pipeline",
+  "fullyQualifiedName": "Airflow.broken_pipeline",
+  "description": "This pipeline is intentionally invalid for testing validation.",
+  "service": {
+    "id": "svc-airflow-001",
+    "name": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "step_one",
+      "displayName": "Step One",
+      "fullyQualifiedName": "Airflow.broken_pipeline.step_one",
+      "taskType": "Extract",
+      "downstreamTasks": ["step_two"]
+    },
+    {
+      "name": "step_two",
+      "displayName": "Step Two",
+      "fullyQualifiedName": "Airflow.broken_pipeline.step_two",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": "0 4 * * *",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" }
+  ]
+}

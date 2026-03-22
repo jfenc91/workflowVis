@@ -1,0 +1,69 @@
+{
+  "id": "b1a2c3d4-1111-4aaa-bbbb-000000000001",
+  "name": "extract_pipeline",
+  "displayName": "Extract Pipeline",
+  "fullyQualifiedName": "Airflow.extract_pipeline",
+  "description": "Extracts raw data from source systems into the staging layer.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "extract_postgres_orders",
+      "displayName": "Extract Postgres Orders",
+      "fullyQualifiedName": "Airflow.extract_pipeline.extract_postgres_orders",
+      "description": "Full extract of the orders table from the transactional Postgres database.",
+      "taskType": "Extract",
+      "downstreamTasks": ["extract_postgres_customers", "stage_orders"]
+    },
+    {
+      "name": "extract_postgres_customers",
+      "displayName": "Extract Postgres Customers",
+      "fullyQualifiedName": "Airflow.extract_pipeline.extract_postgres_customers",
+      "description": "Incremental extract of the customers table.",
+      "taskType": "Extract",
+      "downstreamTasks": ["stage_customers"]
+    },
+    {
+      "name": "extract_s3_clickstream",
+      "displayName": "Extract S3 Clickstream",
+      "fullyQualifiedName": "Airflow.extract_pipeline.extract_s3_clickstream",
+      "description": "Reads new clickstream parquet files from the S3 landing zone.",
+      "taskType": "Extract",
+      "downstreamTasks": ["stage_clickstream"]
+    },
+    {
+      "name": "stage_orders",
+      "displayName": "Stage Orders",
+      "fullyQualifiedName": "Airflow.extract_pipeline.stage_orders",
+      "description": "Write raw orders to staging schema.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    },
+    {
+      "name": "stage_customers",
+      "displayName": "Stage Customers",
+      "fullyQualifiedName": "Airflow.extract_pipeline.stage_customers",
+      "description": "Write raw customers to staging schema.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    },
+    {
+      "name": "stage_clickstream",
+      "displayName": "Stage Clickstream",
+      "fullyQualifiedName": "Airflow.extract_pipeline.stage_clickstream",
+      "description": "Write raw clickstream to staging schema.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "scheduleInterval": "0 2 * * *",
+  "concurrency": 3,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.DataEngineering" }
+  ]
+}

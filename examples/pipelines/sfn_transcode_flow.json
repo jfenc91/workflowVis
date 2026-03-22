@@ -1,0 +1,44 @@
+{
+  "id": "d2000001-0000-4aaa-bbbb-000000000002",
+  "name": "transcode_flow",
+  "displayName": "Transcode Flow",
+  "fullyQualifiedName": "StepFunctions.transcode_flow",
+  "description": "Sub-workflow that transcodes media into multiple renditions in parallel — 720p, 1080p, and 4K.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "transcode_720p",
+      "displayName": "Transcode 720p",
+      "fullyQualifiedName": "StepFunctions.transcode_flow.transcode_720p",
+      "description": "Encodes the source media to 720p H.264 rendition.",
+      "taskType": "Transform",
+      "downstreamTasks": []
+    },
+    {
+      "name": "transcode_1080p",
+      "displayName": "Transcode 1080p",
+      "fullyQualifiedName": "StepFunctions.transcode_flow.transcode_1080p",
+      "description": "Encodes the source media to 1080p H.264 rendition.",
+      "taskType": "Transform",
+      "downstreamTasks": []
+    },
+    {
+      "name": "transcode_4k",
+      "displayName": "Transcode 4K",
+      "fullyQualifiedName": "StepFunctions.transcode_flow.transcode_4k",
+      "description": "Encodes the source media to 4K H.265 rendition.",
+      "taskType": "Transform",
+      "downstreamTasks": []
+    }
+  ],
+  "concurrency": 3,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.Media" }
+  ]
+}

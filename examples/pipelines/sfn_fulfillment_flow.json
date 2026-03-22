@@ -1,0 +1,44 @@
+{
+  "id": "d1000001-0000-4aaa-bbbb-000000000003",
+  "name": "fulfillment_flow",
+  "displayName": "Fulfillment Flow",
+  "fullyQualifiedName": "StepFunctions.fulfillment_flow",
+  "description": "Sub-workflow handling order fulfillment — reserves inventory, creates shipment, and updates order status.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "reserve_inventory",
+      "displayName": "Reserve Inventory",
+      "fullyQualifiedName": "StepFunctions.fulfillment_flow.reserve_inventory",
+      "description": "Reserves warehouse inventory for the order items.",
+      "taskType": "Extract",
+      "downstreamTasks": ["create_shipment"]
+    },
+    {
+      "name": "create_shipment",
+      "displayName": "Create Shipment",
+      "fullyQualifiedName": "StepFunctions.fulfillment_flow.create_shipment",
+      "description": "Creates a shipment record and generates a tracking number via the carrier API.",
+      "taskType": "Transform",
+      "downstreamTasks": ["update_order_status"]
+    },
+    {
+      "name": "update_order_status",
+      "displayName": "Update Order Status",
+      "fullyQualifiedName": "StepFunctions.fulfillment_flow.update_order_status",
+      "description": "Updates the order record to 'shipped' with tracking details.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier1" },
+    { "tagFQN": "Domain.Commerce" }
+  ]
+}

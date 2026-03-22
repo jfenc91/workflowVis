@@ -1,0 +1,36 @@
+{
+  "id": "d4000001-0000-4aaa-bbbb-000000000002",
+  "name": "document_map",
+  "displayName": "Document Map",
+  "fullyQualifiedName": "StepFunctions.document_map",
+  "description": "Map sub-workflow that processes each document in the batch. Each item runs through classify and store in parallel with other items.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "classify_document",
+      "displayName": "Classify Document",
+      "fullyQualifiedName": "StepFunctions.document_map.classify_document",
+      "description": "Classifies the document type and extracts metadata using ML inference.",
+      "taskType": "Transform",
+      "downstreamTasks": ["store_result"]
+    },
+    {
+      "name": "store_result",
+      "displayName": "Store Result",
+      "fullyQualifiedName": "StepFunctions.document_map.store_result",
+      "description": "Writes the classification result and extracted metadata to the document store.",
+      "taskType": "Load",
+      "downstreamTasks": []
+    }
+  ],
+  "concurrency": 10,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.DataEngineering" }
+  ]
+}

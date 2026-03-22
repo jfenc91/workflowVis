@@ -1,0 +1,70 @@
+{
+  "id": "c0c0c0c0-0000-4ccc-dddd-000000000000",
+  "name": "ml_churn_training_pipeline",
+  "displayName": "ML Churn Model - Weekly Retrain",
+  "fullyQualifiedName": "Airflow.ml_churn_training_pipeline",
+  "description": "Top-level ML pipeline that orchestrates weekly churn model retraining. First builds features, then trains and evaluates the model. Each step is a full sub-pipeline.",
+  "service": {
+    "id": "svc-airflow-001",
+    "type": "pipelineService",
+    "name": "Airflow",
+    "fullyQualifiedName": "Airflow"
+  },
+  "tasks": [
+    {
+      "name": "Airflow.ml_feature_pipeline",
+      "displayName": "Run Feature Engineering Pipeline",
+      "fullyQualifiedName": "Airflow.ml_churn_training_pipeline.Airflow.ml_feature_pipeline",
+      "description": "Triggers the feature engineering sub-pipeline to compute and validate the latest feature vectors.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["Airflow.ml_model_pipeline"]
+    },
+    {
+      "name": "Airflow.ml_model_pipeline",
+      "displayName": "Run Model Train & Evaluate Pipeline",
+      "fullyQualifiedName": "Airflow.ml_churn_training_pipeline.Airflow.ml_model_pipeline",
+      "description": "Triggers the model training sub-pipeline to train, evaluate, and conditionally promote the churn model.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["notify_ml_team"]
+    },
+    {
+      "name": "notify_ml_team",
+      "displayName": "Notify ML Team",
+      "fullyQualifiedName": "Airflow.ml_churn_training_pipeline.notify_ml_team",
+      "description": "Posts a Slack summary with model metrics, promotion decision, and links to the MLflow experiment.",
+      "taskType": "Notification",
+      "downstreamTasks": []
+    }
+  ],
+  "pipelineStatus": {
+    "timestamp": 1711065600000,
+    "executionStatus": "Successful",
+    "taskStatus": [
+      {
+        "name": "Airflow.ml_feature_pipeline",
+        "executionStatus": "Successful",
+        "startTime": 1711044000000,
+        "endTime": 1711047600000
+      },
+      {
+        "name": "Airflow.ml_model_pipeline",
+        "executionStatus": "Successful",
+        "startTime": 1711047600000,
+        "endTime": 1711058400000
+      },
+      {
+        "name": "notify_ml_team",
+        "executionStatus": "Successful",
+        "startTime": 1711058400000,
+        "endTime": 1711058410000
+      }
+    ]
+  },
+  "scheduleInterval": "0 1 * * 0",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.MachineLearning" },
+    { "tagFQN": "PipelinePattern.Orchestrator" }
+  ]
+}

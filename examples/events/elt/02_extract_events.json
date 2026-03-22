@@ -1,0 +1,537 @@
+[
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:00:05.000Z",
+    "run": {
+      "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "d5e7a1b2-3c4d-4e5f-a6b7-c8d9e0f1a2b3" },
+          "job": { "namespace": "airflow-prod", "name": "orchestrator_daily_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "extract_pipeline",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:00:10.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0001",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" },
+          "job": { "namespace": "airflow-prod", "name": "extract_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "extract_pipeline.extract_postgres_orders",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "TASK"
+        },
+        "sql": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SQLJobFacet.json",
+          "query": "SELECT * FROM public.orders WHERE updated_at >= '2024-03-21'"
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgres://prod-db.internal:5432",
+        "name": "prod_transactional.public.orders",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "order_id", "type": "BIGINT" },
+              { "name": "customer_id", "type": "BIGINT" },
+              { "name": "order_date", "type": "DATE" },
+              { "name": "total_amount", "type": "NUMERIC(12,2)" },
+              { "name": "status", "type": "VARCHAR(20)" },
+              { "name": "updated_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_orders",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "order_id", "type": "BIGINT" },
+              { "name": "customer_id", "type": "BIGINT" },
+              { "name": "order_date", "type": "DATE" },
+              { "name": "total_amount", "type": "NUMERIC(12,2)" },
+              { "name": "status", "type": "VARCHAR(20)" },
+              { "name": "updated_at", "type": "TIMESTAMP" },
+              { "name": "_extracted_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:00:10.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0003",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" },
+          "job": { "namespace": "airflow-prod", "name": "extract_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "extract_pipeline.extract_s3_clickstream",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "s3://data-lake-prod",
+        "name": "landing/clickstream/dt=2024-03-21/",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "event_id", "type": "STRING" },
+              { "name": "user_id", "type": "BIGINT" },
+              { "name": "event_type", "type": "STRING" },
+              { "name": "page_url", "type": "STRING" },
+              { "name": "session_id", "type": "STRING" },
+              { "name": "event_timestamp", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_clickstream",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "event_id", "type": "STRING" },
+              { "name": "user_id", "type": "BIGINT" },
+              { "name": "event_type", "type": "STRING" },
+              { "name": "page_url", "type": "STRING" },
+              { "name": "session_id", "type": "STRING" },
+              { "name": "event_timestamp", "type": "TIMESTAMP" },
+              { "name": "_extracted_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:03:30.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0001",
+      "facets": {}
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "extract_pipeline.extract_postgres_orders"
+    },
+    "inputs": [
+      {
+        "namespace": "postgres://prod-db.internal:5432",
+        "name": "prod_transactional.public.orders",
+        "inputFacets": {
+          "inputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/InputStatisticsInputDatasetFacet.json",
+            "rowCount": 48230,
+            "size": 15728640
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_orders",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 48230,
+            "size": 16252928
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:03:35.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0002",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" },
+          "job": { "namespace": "airflow-prod", "name": "extract_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "extract_pipeline.extract_postgres_customers",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "TASK"
+        },
+        "sql": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SQLJobFacet.json",
+          "query": "SELECT * FROM public.customers WHERE updated_at >= '2024-03-21'"
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgres://prod-db.internal:5432",
+        "name": "prod_transactional.public.customers",
+        "facets": {
+          "schema": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/SchemaDatasetFacet.json",
+            "fields": [
+              { "name": "customer_id", "type": "BIGINT" },
+              { "name": "email", "type": "VARCHAR(255)" },
+              { "name": "name", "type": "VARCHAR(100)" },
+              { "name": "signup_date", "type": "DATE" },
+              { "name": "plan_tier", "type": "VARCHAR(20)" },
+              { "name": "updated_at", "type": "TIMESTAMP" }
+            ]
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_customers"
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:03:35.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0004",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" },
+          "job": { "namespace": "airflow-prod", "name": "extract_pipeline" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "airflow-prod",
+      "name": "extract_pipeline.stage_orders",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "AIRFLOW",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_orders"
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_orders"
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:04:00.000Z",
+    "run": { "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0004", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.stage_orders" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_orders",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 48230,
+            "size": 16252928
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:04:00.000Z",
+    "run": { "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0003", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.extract_s3_clickstream" },
+    "inputs": [
+      {
+        "namespace": "s3://data-lake-prod",
+        "name": "landing/clickstream/dt=2024-03-21/",
+        "inputFacets": {
+          "inputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/InputStatisticsInputDatasetFacet.json",
+            "rowCount": 1247891,
+            "size": 524288000
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_clickstream",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1247891,
+            "size": 536870912
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:04:05.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0006",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" },
+          "job": { "namespace": "airflow-prod", "name": "extract_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.stage_clickstream" },
+    "inputs": [
+      { "namespace": "postgres://warehouse.internal:5432", "name": "warehouse.staging.raw_clickstream" }
+    ],
+    "outputs": [
+      { "namespace": "postgres://warehouse.internal:5432", "name": "warehouse.staging.raw_clickstream" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:05:30.000Z",
+    "run": { "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0002", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.extract_postgres_customers" },
+    "inputs": [
+      {
+        "namespace": "postgres://prod-db.internal:5432",
+        "name": "prod_transactional.public.customers",
+        "inputFacets": {
+          "inputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/InputStatisticsInputDatasetFacet.json",
+            "rowCount": 3412,
+            "size": 1048576
+          }
+        }
+      }
+    ],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_customers",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 3412,
+            "size": 1114112
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "START",
+    "eventTime": "2024-03-22T02:05:35.000Z",
+    "run": {
+      "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0005",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d" },
+          "job": { "namespace": "airflow-prod", "name": "extract_pipeline" }
+        }
+      }
+    },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.stage_customers" },
+    "inputs": [
+      { "namespace": "postgres://warehouse.internal:5432", "name": "warehouse.staging.raw_customers" }
+    ],
+    "outputs": [
+      { "namespace": "postgres://warehouse.internal:5432", "name": "warehouse.staging.raw_customers" }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:06:00.000Z",
+    "run": { "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0006", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.stage_clickstream" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_clickstream",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 1247891,
+            "size": 536870912
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:06:30.000Z",
+    "run": { "runId": "11111111-aaaa-4bbb-cccc-ddddeeee0005", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline.stage_customers" },
+    "inputs": [],
+    "outputs": [
+      {
+        "namespace": "postgres://warehouse.internal:5432",
+        "name": "warehouse.staging.raw_customers",
+        "outputFacets": {
+          "outputStatistics": {
+            "_producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+            "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/OutputStatisticsOutputDatasetFacet.json",
+            "rowCount": 3412,
+            "size": 1114112
+          }
+        }
+      }
+    ],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-03-22T02:06:35.000Z",
+    "run": { "runId": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d", "facets": {} },
+    "job": { "namespace": "airflow-prod", "name": "extract_pipeline" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/apache/airflow/tree/providers-openlineage/1.8.0",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

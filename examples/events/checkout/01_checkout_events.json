@@ -1,0 +1,303 @@
+[
+  {
+    "_comment": "=== Pipeline START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:00:00.000Z",
+    "run": { "runId": "c0000003-0000-4000-a000-000000000001", "facets": {} },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== validate_cart START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:00:05.000Z",
+    "run": {
+      "runId": "c0000003-aaaa-4000-a000-000000000011",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "c0000003-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "checkout_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow.validate_cart",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T18:00:30.000Z",
+    "run": { "runId": "c0000003-aaaa-4000-a000-000000000011", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow.validate_cart" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== ATTEMPT 1: process_payment FAILS — card declined ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:00:35.000Z",
+    "run": {
+      "runId": "c0000003-aaaa-4000-a000-000000000021",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "c0000003-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "checkout_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow.process_payment",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "FAIL",
+    "eventTime": "2024-04-15T18:00:50.000Z",
+    "run": {
+      "runId": "c0000003-aaaa-4000-a000-000000000021",
+      "facets": {
+        "errorMessage": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ErrorMessageRunFacet.json",
+          "message": "Payment declined: card issuer returned code 05 (Do Not Honor). Will retry with backoff.",
+          "programmingLanguage": "PYTHON",
+          "stackTrace": "Traceback (most recent call last):\n  File \"/var/task/handlers/payment.py\", line 47, in process\n    result = gateway.charge(card_token, amount_cents)\n  File \"/var/task/lib/gateway.py\", line 83, in charge\n    raise PaymentDeclinedError(response.decline_code, response.message)\ngateway.PaymentDeclinedError: Card declined (code 05): Do Not Honor"
+        }
+      }
+    },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow.process_payment" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== ATTEMPT 2: process_payment retries and SUCCEEDS ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:01:00.000Z",
+    "run": {
+      "runId": "c0000003-bbbb-4000-a000-000000000021",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "c0000003-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "checkout_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow.process_payment"
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T18:01:20.000Z",
+    "run": { "runId": "c0000003-bbbb-4000-a000-000000000021", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow.process_payment" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== reserve_inventory START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:01:25.000Z",
+    "run": {
+      "runId": "c0000003-aaaa-4000-a000-000000000031",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "c0000003-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "checkout_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow.reserve_inventory",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T18:01:50.000Z",
+    "run": { "runId": "c0000003-aaaa-4000-a000-000000000031", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow.reserve_inventory" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== send_confirmation START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:01:55.000Z",
+    "run": {
+      "runId": "c0000003-aaaa-4000-a000-000000000041",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "c0000003-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "checkout_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow.send_confirmation",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T18:02:10.000Z",
+    "run": { "runId": "c0000003-aaaa-4000-a000-000000000041", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow.send_confirmation" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== update_analytics START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T18:02:15.000Z",
+    "run": {
+      "runId": "c0000003-aaaa-4000-a000-000000000051",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "c0000003-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "checkout_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "checkout_workflow.update_analytics",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T18:02:35.000Z",
+    "run": { "runId": "c0000003-aaaa-4000-a000-000000000051", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow.update_analytics" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Pipeline COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T18:02:40.000Z",
+    "run": { "runId": "c0000003-0000-4000-a000-000000000001", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "checkout_workflow" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]

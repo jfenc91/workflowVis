@@ -1,0 +1,98 @@
+{
+  "id": "d4000001-0000-4aaa-bbbb-000000000001",
+  "name": "batch_processing_workflow",
+  "displayName": "Batch Processing Workflow",
+  "fullyQualifiedName": "StepFunctions.batch_processing_workflow",
+  "description": "Top-level state machine for batch document processing. Scans for new uploads, processes each document via a Map state in parallel, polls for QA approval in a loop, then publishes results.",
+  "service": {
+    "id": "svc-sfn-001",
+    "type": "pipelineService",
+    "name": "StepFunctions",
+    "fullyQualifiedName": "StepFunctions"
+  },
+  "tasks": [
+    {
+      "name": "scan_input_bucket",
+      "displayName": "Scan Input Bucket",
+      "fullyQualifiedName": "StepFunctions.batch_processing_workflow.scan_input_bucket",
+      "description": "Scans the S3 upload bucket for new documents and produces a manifest of items to process.",
+      "taskType": "Extract",
+      "downstreamTasks": ["StepFunctions.document_map"]
+    },
+    {
+      "name": "StepFunctions.document_map",
+      "displayName": "Run Document Map",
+      "fullyQualifiedName": "StepFunctions.batch_processing_workflow.StepFunctions.document_map",
+      "description": "Map state that fans out to process each document in the manifest in parallel.",
+      "taskType": "SubPipeline",
+      "downstreamTasks": ["poll_quality_review"]
+    },
+    {
+      "name": "poll_quality_review",
+      "displayName": "Poll Quality Review",
+      "fullyQualifiedName": "StepFunctions.batch_processing_workflow.poll_quality_review",
+      "description": "Loop state that polls the QA review queue until all documents are approved. Retries with backoff.",
+      "taskType": "Test",
+      "downstreamTasks": ["publish_results"]
+    },
+    {
+      "name": "publish_results",
+      "displayName": "Publish Results",
+      "fullyQualifiedName": "StepFunctions.batch_processing_workflow.publish_results",
+      "description": "Publishes approved documents to the document management system.",
+      "taskType": "Publish",
+      "downstreamTasks": ["notify_team"]
+    },
+    {
+      "name": "notify_team",
+      "displayName": "Notify Team",
+      "fullyQualifiedName": "StepFunctions.batch_processing_workflow.notify_team",
+      "description": "Sends a summary notification with processing stats and QA results.",
+      "taskType": "Notification",
+      "downstreamTasks": []
+    }
+  ],
+  "pipelineStatus": {
+    "timestamp": 1713211440000,
+    "executionStatus": "Successful",
+    "taskStatus": [
+      {
+        "name": "scan_input_bucket",
+        "executionStatus": "Successful",
+        "startTime": 1713211205000,
+        "endTime": 1713211230000
+      },
+      {
+        "name": "StepFunctions.document_map",
+        "executionStatus": "Successful",
+        "startTime": 1713211235000,
+        "endTime": 1713211310000
+      },
+      {
+        "name": "poll_quality_review",
+        "executionStatus": "Successful",
+        "startTime": 1713211315000,
+        "endTime": 1713211390000
+      },
+      {
+        "name": "publish_results",
+        "executionStatus": "Successful",
+        "startTime": 1713211395000,
+        "endTime": 1713211420000
+      },
+      {
+        "name": "notify_team",
+        "executionStatus": "Successful",
+        "startTime": 1713211425000,
+        "endTime": 1713211435000
+      }
+    ]
+  },
+  "scheduleInterval": "0 20 * * *",
+  "concurrency": 1,
+  "tags": [
+    { "tagFQN": "Tier.Tier2" },
+    { "tagFQN": "Domain.DataEngineering" },
+    { "tagFQN": "PipelinePattern.Orchestrator" }
+  ]
+}

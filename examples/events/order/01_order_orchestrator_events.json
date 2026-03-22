@@ -1,0 +1,90 @@
+[
+  {
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:00:00.000Z",
+    "run": {
+      "runId": "a0000001-0000-4000-a000-000000000001",
+      "facets": {
+        "nominalTime": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/NominalTimeRunFacet.json",
+          "nominalStartTime": "2024-04-15T10:00:00.000Z",
+          "nominalEndTime": "2024-04-15T10:05:00.000Z"
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "order_fulfillment_workflow",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "DAG"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "_comment": "=== Leaf task: notify_customer START ===",
+    "eventType": "START",
+    "eventTime": "2024-04-15T10:04:20.000Z",
+    "run": {
+      "runId": "a0000001-aaaa-4000-a000-000000000031",
+      "facets": {
+        "parent": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/1-0-1/ParentRunFacet.json",
+          "run": { "runId": "a0000001-0000-4000-a000-000000000001" },
+          "job": { "namespace": "sfn-prod", "name": "order_fulfillment_workflow" }
+        }
+      }
+    },
+    "job": {
+      "namespace": "sfn-prod",
+      "name": "order_fulfillment_workflow.notify_customer",
+      "facets": {
+        "jobType": {
+          "_producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+          "_schemaURL": "https://openlineage.io/spec/facets/2-0-2/JobTypeJobFacet.json",
+          "processingType": "BATCH",
+          "integration": "STEP_FUNCTIONS",
+          "jobType": "TASK"
+        }
+      }
+    },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+  {
+    "_comment": "=== Leaf task: notify_customer COMPLETE ===",
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:04:30.000Z",
+    "run": { "runId": "a0000001-aaaa-4000-a000-000000000031", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "order_fulfillment_workflow.notify_customer" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  },
+
+  {
+    "eventType": "COMPLETE",
+    "eventTime": "2024-04-15T10:04:35.000Z",
+    "run": { "runId": "a0000001-0000-4000-a000-000000000001", "facets": {} },
+    "job": { "namespace": "sfn-prod", "name": "order_fulfillment_workflow" },
+    "inputs": [],
+    "outputs": [],
+    "producer": "https://github.com/OpenLineage/OpenLineage/tree/1.24.2/integration/aws",
+    "schemaURL": "https://openlineage.io/spec/2-0-2/OpenLineage.json#/definitions/RunEvent"
+  }
+]
