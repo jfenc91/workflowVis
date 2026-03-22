@@ -133,7 +133,7 @@ The app ships with 7 sample scenarios:
 
 ## Tech Stack
 
-- **TypeScript** (strict, ES2022) — minimal dependencies (AJV for schema validation)
+- **TypeScript** (strict, ES2022) — runtime deps: AJV + ajv-formats for schema validation
 - **Canvas 2D** — node/edge rendering with theme-aware colors
 - **WebGL** — point sprite particle system with custom shaders
 - **esbuild** — fast transpilation and bundling
@@ -180,7 +180,7 @@ Your `load()` method must return a `DagModel` — the graph the renderer draws. 
 **Option A: Use the built-in builder with Pipeline objects**
 
 ```typescript
-import { buildDag } from 'pipeline-visualizer/data/dag-builder';
+import { buildDag } from 'pipeline-visualizer';
 
 async load(runKey: string): Promise<DagModel | null> {
   const pipelines: Pipeline[] = await this.fetchPipelines(runKey);
@@ -219,7 +219,7 @@ interface Task {
 **Option B: Build the DagModel manually**
 
 ```typescript
-import { DagModel, DagNode, DagEdge } from 'pipeline-visualizer/data/dag-builder';
+import { DagModel, DagNode, DagEdge } from 'pipeline-visualizer';
 
 async load(config: string): Promise<DagModel | null> {
   const model = new DagModel();
@@ -263,7 +263,7 @@ Events drive node status changes and visual effects (particles, ripples, glow). 
 The `EventCorrelator` maps `PipelineEvent`s to the correct `DagNode` by matching `pipelineName` + `taskName`, updates node status/timing/datasets, and fires the callbacks for you.
 
 ```typescript
-import { EventCorrelator } from 'pipeline-visualizer/data/event-correlator';
+import { EventCorrelator } from 'pipeline-visualizer';
 
 async load(runKey: string): Promise<DagModel | null> {
   const model = buildDag(pipelines);
@@ -339,8 +339,8 @@ get frameState(): FrameState {
 
 ```typescript
 import { DataSource } from 'pipeline-visualizer';
-import { buildDag } from 'pipeline-visualizer/data/dag-builder';
-import { EventCorrelator } from 'pipeline-visualizer/data/event-correlator';
+import { buildDag } from 'pipeline-visualizer';
+import { EventCorrelator } from 'pipeline-visualizer';
 
 class LiveSource extends DataSource {
   ws: WebSocket | null = null;

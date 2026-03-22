@@ -32,7 +32,7 @@
             '<div style="padding:40px;font-family:system-ui;color:#e11d48;max-width:600px;margin:auto">' +
             '<h2>Failed to load</h2>' +
             '<p style="color:#64748b">' + msg + '</p>' +
-            '<button onclick="sessionStorage.removeItem(\'' + RELOAD_KEY + '\');location.reload(true)" ' +
+            '<button onclick="sessionStorage.removeItem(\'' + RELOAD_KEY + '\');location.reload()" ' +
             'style="margin-top:16px;padding:8px 20px;background:#6366f1;color:white;border:none;border-radius:8px;cursor:pointer;font-size:14px">' +
             'Clear cache &amp; reload</button></div>';
           return;
@@ -45,7 +45,7 @@
           });
         }
         // Force hard reload (bypass cache)
-        location.reload(true);
+        location.reload();
       }
 
       // Catch module import errors (SyntaxError, TypeError from stale exports)

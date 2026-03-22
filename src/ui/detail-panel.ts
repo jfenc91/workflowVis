@@ -5,7 +5,7 @@ import type { Dataset } from '../types.js';
 import { getTaskTypeColor, getStatusColor } from '../util/color.js';
 import { formatDuration, formatBytes, formatRowCount } from '../util/format.js';
 
-const DATA_API_BASE = 'http://localhost:8001';
+const DATA_API_BASE = `${location.protocol}//${location.hostname}:8001`;
 
 /**
  * Detect dataset format from name/namespace.
@@ -59,7 +59,7 @@ export class DetailPanel {
     let html = `
       <div class="detail-header">
         <div class="detail-close" id="detail-close">&times;</div>
-        <h3 class="detail-title">${node.displayName}</h3>
+        <h3 class="detail-title">${escapeHtml(node.displayName)}</h3>
         <div class="detail-meta">
           <span class="detail-badge" style="background:${typeColor.accent};color:white">${node.taskType}</span>
           <span class="detail-badge" style="background:${statusColor.badge};color:white">${node.status}</span>
@@ -79,7 +79,7 @@ export class DetailPanel {
     if (node.description) {
       html += `<div class="detail-section">
         <h4>Description</h4>
-        <p class="detail-desc">${node.description}</p>
+        <p class="detail-desc">${escapeHtml(node.description)}</p>
       </div>`;
     }
 
@@ -104,7 +104,7 @@ export class DetailPanel {
         const a = node.attempts[i];
         html += `<div class="detail-attempt detail-attempt-${a.status}">
           <strong>Attempt ${i + 1}</strong> \u2014 ${a.status}
-          ${a.error ? `<div class="detail-error">${a.error.message}</div>` : ''}
+          ${a.error ? `<div class="detail-error">${escapeHtml(a.error.message)}</div>` : ''}
         </div>`;
       }
       html += `</div>`;
@@ -115,7 +115,7 @@ export class DetailPanel {
       html += `<div class="detail-section">
         <h4>Error</h4>
         <div class="detail-error-box">
-          <div class="detail-error-msg">${node.error.message}</div>
+          <div class="detail-error-msg">${escapeHtml(node.error.message)}</div>
           ${node.error.stackTrace ? `<pre class="detail-stacktrace">${escapeHtml(node.error.stackTrace)}</pre>` : ''}
         </div>
       </div>`;
@@ -162,8 +162,8 @@ export class DetailPanel {
         const typeClass = `event-${evt.eventType.toLowerCase()}`;
         html += `<div class="detail-event ${typeClass}">
           <span class="detail-event-time">${time}</span>
-          <span class="detail-event-type">${evt.eventType}</span>
-          <span class="detail-event-job">${evt.jobName}</span>
+          <span class="detail-event-type">${escapeHtml(evt.eventType)}</span>
+          <span class="detail-event-job">${escapeHtml(evt.jobName)}</span>
         </div>`;
       }
       html += `</div></div>`;
