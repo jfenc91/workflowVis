@@ -1,4 +1,5 @@
 import * as esbuild from 'esbuild';
+import { execSync } from 'child_process';
 import { cpSync, mkdirSync, readdirSync, statSync } from 'fs';
 import { join, relative } from 'path';
 
@@ -86,5 +87,8 @@ if (mode === 'dev' || mode === 'watch') {
 
   cpSync('style.css', 'dist/style.css');
 
-  console.log('Built dist/pipeline-visualizer.js + dist/style.css');
+  // Generate .d.ts type declarations
+  execSync('npx tsc --declaration --emitDeclarationOnly --outDir dist/types --noEmit false', { stdio: 'inherit' });
+
+  console.log('Built dist/pipeline-visualizer.js + dist/style.css + dist/types/*.d.ts');
 }

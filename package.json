@@ -5,12 +5,20 @@
   "type": "module",
   "main": "dist/pipeline-visualizer.js",
   "module": "dist/pipeline-visualizer.js",
+  "types": "dist/types/index.d.ts",
   "exports": {
-    ".": "./dist/pipeline-visualizer.js",
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/pipeline-visualizer.js"
+    },
     "./style.css": "./dist/style.css"
   },
   "files": [
-    "dist"
+    "dist/pipeline-visualizer.js",
+    "dist/pipeline-visualizer.js.map",
+    "dist/pipeline-visualizer.d.ts",
+    "dist/style.css",
+    "dist/types"
   ],
   "directories": {
     "example": "examples",
