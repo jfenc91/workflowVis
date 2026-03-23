@@ -3,6 +3,12 @@
 import type { DagNode } from '../data/dag-builder.js';
 import type { Point } from '../types.js';
 
+const CAM_DURATION = 400; // ms
+
+function easeOutCubic(t: number): number {
+  return 1 - (1 - t) ** 3;
+}
+
 export class Camera {
   x: number;
   y: number;
@@ -11,6 +17,12 @@ export class Camera {
   maxZoom: number;
   width: number;
   height: number;
+
+  // Animation state
+  private _animFrom: { x: number; y: number; zoom: number } | null = null;
+  private _animTo: { x: number; y: number; zoom: number } | null = null;
+  private _animStart: number = 0;
+  private _animDuration: number = CAM_DURATION;
 
   constructor() {
     this.x = 0;
@@ -99,5 +111,63 @@ export class Camera {
 
     this.x = -centerX;
     this.y = -centerY;
+  }
+
+  /** Smoothly animate to target camera state. */
+  animateTo(x: number, y: number, zoom: number, duration: number = CAM_DURATION): void {
+    this._animFrom = { x: this.x, y: this.y, zoom: this.zoom };
+    this._animTo = { x, y, zoom };
+    this._animStart = performance.now();
+    this._animDuration = duration;
+  }
+
+  /** Compute fit-to-content target and animate to it. */
+  fitToContentAnimated(nodes: DagNode[], padding: number = 80): void {
+    if (nodes.length === 0) return;
+
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const node of nodes) {
+      minX = Math.min(minX, node.x);
+      minY = Math.min(minY, node.y);
+      maxX = Math.max(maxX, node.x + node.width);
+      maxY = Math.max(maxY, node.y + node.height);
+    }
+
+    const contentWidth = maxX - minX + padding * 2;
+    const contentHeight = maxY - minY + padding * 2;
+    const centerX = (minX + maxX) / 2;
+    const centerY = (minY + maxY) / 2;
+
+    let targetZoom = Math.min(
+      this.width / contentWidth,
+      this.height / contentHeight,
+      1.5
+    );
+    targetZoom = Math.max(this.minZoom, Math.min(this.maxZoom, targetZoom));
+
+    this.animateTo(-centerX, -centerY, targetZoom);
+  }
+
+  /** Update camera animation. Returns true while animating. */
+  tickAnimation(time: number): boolean {
+    if (!this._animFrom || !this._animTo) return false;
+
+    const elapsed = time - this._animStart;
+    const t = Math.min(elapsed / this._animDuration, 1);
+    const e = easeOutCubic(t);
+
+    this.x = this._animFrom.x + (this._animTo.x - this._animFrom.x) * e;
+    this.y = this._animFrom.y + (this._animTo.y - this._animFrom.y) * e;
+    this.zoom = this._animFrom.zoom + (this._animTo.zoom - this._animFrom.zoom) * e;
+
+    if (t >= 1) {
+      this.x = this._animTo.x;
+      this.y = this._animTo.y;
+      this.zoom = this._animTo.zoom;
+      this._animFrom = null;
+      this._animTo = null;
+      return false;
+    }
+    return true;
   }
 }

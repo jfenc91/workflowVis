@@ -261,6 +261,51 @@ html, body {
   pointer-events: none;
 }
 
+/* ======= Minimap ======= */
+.minimap-wrap {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  pointer-events: none;
+}
+.minimap-canvas {
+  border-radius: 8px;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: var(--shadow-md);
+  display: block;
+}
+.minimap-toggle {
+  pointer-events: auto;
+  margin-top: 4px;
+  width: 26px;
+  height: 22px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--bg-glass-strong);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.minimap-toggle:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+.minimap-collapsed .minimap-toggle {
+  margin-top: 0;
+}
+
 /* ======= Detail Panel ======= */
 #detail-panel {
   width: 0;

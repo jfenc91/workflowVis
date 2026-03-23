@@ -1,7 +1,8 @@
 // Custom layered DAG layout using topological sort + barycenter ordering
 
 import type { DagModel } from '../data/dag-builder.js';
-import { DagNode } from '../data/dag-builder.js';
+import type { DagNode } from '../data/dag-builder.js';
+import type { LayoutOptions } from '../types.js';
 
 const NODE_WIDTH = 200;
 const NODE_HEIGHT = 60;
@@ -12,7 +13,29 @@ const GROUP_HEADER = 30;
 
 export { NODE_WIDTH, NODE_HEIGHT, LAYER_SPACING, NODE_SPACING, GROUP_PADDING, GROUP_HEADER };
 
-export function layoutDag(dagModel: DagModel): void {
+export interface ResolvedLayoutOptions {
+  nodeWidth: number;
+  nodeHeight: number;
+  layerSpacing: number;
+  nodeSpacing: number;
+  groupPadding: number;
+  groupHeader: number;
+}
+
+export function resolveLayoutOptions(opts?: LayoutOptions): ResolvedLayoutOptions {
+  return {
+    nodeWidth: opts?.nodeWidth ?? NODE_WIDTH,
+    nodeHeight: opts?.nodeHeight ?? NODE_HEIGHT,
+    layerSpacing: opts?.layerSpacing ?? LAYER_SPACING,
+    nodeSpacing: opts?.nodeSpacing ?? NODE_SPACING,
+    groupPadding: opts?.groupPadding ?? GROUP_PADDING,
+    groupHeader: opts?.groupHeader ?? GROUP_HEADER,
+  };
+}
+
+export function layoutDag(dagModel: DagModel, opts?: LayoutOptions): void {
+  const o = resolveLayoutOptions(opts);
+
   // Get top-level nodes (root pipeline tasks)
   const rootTaskIds: string[] = [];
 
@@ -29,12 +52,12 @@ export function layoutDag(dagModel: DagModel): void {
   barycenterOrdering(dagModel, layers);
 
   // Assign positions
-  assignPositions(dagModel, layers);
+  assignPositions(dagModel, layers, o);
 
   // Layout expanded sub-pipeline children
   for (const node of dagModel.nodes.values()) {
     if (node.isSubPipeline && node.expanded && node.children.length > 0) {
-      layoutSubPipeline(dagModel, node);
+      layoutSubPipeline(dagModel, node, o);
     }
   }
 }
@@ -123,23 +146,23 @@ function barycenterOrdering(dagModel: DagModel, layers: string[][]): void {
   }
 }
 
-function assignPositions(dagModel: DagModel, layers: string[][]): void {
+function assignPositions(dagModel: DagModel, layers: string[][], o: ResolvedLayoutOptions): void {
   for (let layerIdx = 0; layerIdx < layers.length; layerIdx++) {
     const layer = layers[layerIdx];
-    const totalHeight = layer.length * NODE_HEIGHT + (layer.length - 1) * NODE_SPACING;
+    const totalHeight = layer.length * o.nodeHeight + (layer.length - 1) * o.nodeSpacing;
     const startY = -totalHeight / 2;
 
     for (let i = 0; i < layer.length; i++) {
       const node = dagModel.getNode(layer[i])!;
-      node.x = layerIdx * LAYER_SPACING;
-      node.y = startY + i * (NODE_HEIGHT + NODE_SPACING);
-      node.width = NODE_WIDTH;
-      node.height = NODE_HEIGHT;
+      node.x = layerIdx * o.layerSpacing;
+      node.y = startY + i * (o.nodeHeight + o.nodeSpacing);
+      node.width = o.nodeWidth;
+      node.height = o.nodeHeight;
     }
   }
 }
 
-function layoutSubPipeline(dagModel: DagModel, parentNode: DagNode): void {
+function layoutSubPipeline(dagModel: DagModel, parentNode: DagNode, o: ResolvedLayoutOptions): void {
   const children = parentNode.children;
   if (children.length === 0) return;
 
@@ -152,15 +175,15 @@ function layoutSubPipeline(dagModel: DagModel, parentNode: DagNode): void {
   // Compute child positions relative to parent
   for (let layerIdx = 0; layerIdx < layers.length; layerIdx++) {
     const layer = layers[layerIdx];
-    const totalHeight = layer.length * NODE_HEIGHT + (layer.length - 1) * NODE_SPACING;
+    const totalHeight = layer.length * o.nodeHeight + (layer.length - 1) * o.nodeSpacing;
     const startY = -totalHeight / 2;
 
     for (let i = 0; i < layer.length; i++) {
       const node = dagModel.getNode(layer[i])!;
-      node.x = layerIdx * LAYER_SPACING;
-      node.y = startY + i * (NODE_HEIGHT + NODE_SPACING);
-      node.width = NODE_WIDTH;
-      node.height = NODE_HEIGHT;
+      node.x = layerIdx * o.layerSpacing;
+      node.y = startY + i * (o.nodeHeight + o.nodeSpacing);
+      node.width = o.nodeWidth;
+      node.height = o.nodeHeight;
     }
   }
 
@@ -173,12 +196,12 @@ function layoutSubPipeline(dagModel: DagModel, parentNode: DagNode): void {
     maxY = Math.max(maxY, child.y + child.height);
   }
 
-  const groupWidth = (maxX - minX) + GROUP_PADDING * 2;
-  const groupHeight = (maxY - minY) + GROUP_PADDING * 2 + GROUP_HEADER;
+  const groupWidth = (maxX - minX) + o.groupPadding * 2;
+  const groupHeight = (maxY - minY) + o.groupPadding * 2 + o.groupHeader;
 
   // Offset children so they're relative to the parent's group position
-  const offsetX = parentNode.x + GROUP_PADDING - minX;
-  const offsetY = parentNode.y + GROUP_PADDING + GROUP_HEADER - minY;
+  const offsetX = parentNode.x + o.groupPadding - minX;
+  const offsetY = parentNode.y + o.groupPadding + o.groupHeader - minY;
 
   for (const child of children) {
     child.x += offsetX;

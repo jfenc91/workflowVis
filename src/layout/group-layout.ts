@@ -2,18 +2,21 @@
 // after sub-pipeline expansion/collapse
 
 import type { DagModel, DagNode } from '../data/dag-builder.js';
-import { layoutDag, GROUP_PADDING, GROUP_HEADER, NODE_WIDTH, NODE_HEIGHT, LAYER_SPACING, NODE_SPACING } from './dagre-layout.js';
+import type { LayoutOptions } from '../types.js';
+import { layoutDag, resolveLayoutOptions } from './dagre-layout.js';
 
-export function relayout(dagModel: DagModel): void {
+export function relayout(dagModel: DagModel, opts?: LayoutOptions): void {
+  const o = resolveLayoutOptions(opts);
+
   // Full re-layout
-  layoutDag(dagModel);
+  layoutDag(dagModel, opts);
 
   // After initial layout with expanded sub-pipelines,
   // we need to adjust subsequent layers to avoid overlap
-  adjustForGroups(dagModel);
+  adjustForGroups(dagModel, o.nodeSpacing, o.nodeWidth, o.layerSpacing);
 }
 
-function adjustForGroups(dagModel: DagModel): void {
+function adjustForGroups(dagModel: DagModel, nodeSpacing: number, nodeWidth: number, layerSpacing: number): void {
   // Collect top-level nodes and sort by layer
   const topLevel: DagNode[] = [];
   for (const node of dagModel.nodes.values()) {
@@ -37,7 +40,7 @@ function adjustForGroups(dagModel: DagModel): void {
       const prev = nodes[i - 1];
       const curr = nodes[i];
       const prevBottom = prev.y + prev.height;
-      const minY = prevBottom + NODE_SPACING;
+      const minY = prevBottom + nodeSpacing;
 
       if (curr.y < minY) {
         const shift = minY - curr.y;
@@ -71,10 +74,10 @@ function adjustForGroups(dagModel: DagModel): void {
   }
 
   // Adjust X positions for expanded sub-pipelines that are wider
-  adjustLayerXPositions(dagModel, layerMap);
+  adjustLayerXPositions(layerMap, nodeWidth, layerSpacing);
 }
 
-function adjustLayerXPositions(_dagModel: DagModel, layerMap: Map<number, DagNode[]>): void {
+function adjustLayerXPositions(layerMap: Map<number, DagNode[]>, nodeWidth: number, layerSpacing: number): void {
   // Sort layers by index
   const sortedLayers = [...layerMap.keys()].sort((a, b) => a - b);
 
@@ -97,11 +100,12 @@ function adjustLayerXPositions(_dagModel: DagModel, layerMap: Map<number, DagNod
       }
     }
 
-    currentX += maxWidth + (LAYER_SPACING - NODE_WIDTH);
+    currentX += maxWidth + (layerSpacing - nodeWidth);
   }
 }
 
-export function toggleSubPipeline(dagModel: DagModel, nodeId: string): void {
+export function toggleSubPipeline(dagModel: DagModel, nodeId: string, opts?: LayoutOptions): void {
+  const o = resolveLayoutOptions(opts);
   const node = dagModel.getNode(nodeId);
   if (!node || !node.isSubPipeline) return;
 
@@ -109,9 +113,9 @@ export function toggleSubPipeline(dagModel: DagModel, nodeId: string): void {
 
   if (!node.expanded) {
     // Collapse: reset to standard node size
-    node.width = NODE_WIDTH;
-    node.height = NODE_HEIGHT;
+    node.width = o.nodeWidth;
+    node.height = o.nodeHeight;
   }
 
-  relayout(dagModel);
+  relayout(dagModel, opts);
 }

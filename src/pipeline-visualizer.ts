@@ -4,7 +4,9 @@
 import type { DagModel } from './data/dag-builder.js';
 import type { DataSource } from './data/data-source.js';
 import type { SimulationSource } from './harness/simulation-source.js';
+import type { LayoutOptions } from './types.js';
 import { ValidationError } from './data/validators.js';
+import { LayoutAnimator } from './layout/animator.js';
 import { relayout, toggleSubPipeline } from './layout/group-layout.js';
 import { Camera } from './render/camera.js';
 import { CanvasRenderer } from './render/canvas-renderer.js';
@@ -12,6 +14,7 @@ import { WebGLOverlay } from './render/webgl-overlay.js';
 import { Controls } from './ui/controls.js';
 import { DetailPanel } from './ui/detail-panel.js';
 import { Interaction } from './ui/interaction.js';
+import { Minimap } from './ui/minimap.js';
 
 export class PipelineVisualizer {
   container: HTMLElement;
@@ -29,17 +32,23 @@ export class PipelineVisualizer {
   controls!: Controls;
   detailPanel!: DetailPanel;
   interaction!: Interaction;
+  minimap!: Minimap;
 
   // Extension point: called each render frame so harness can update its UI
   onFrame: ((time: number) => void) | null;
 
-  constructor(container: HTMLElement, source: DataSource) {
+  _layoutOptions: LayoutOptions | undefined;
+  _animator: LayoutAnimator;
+
+  constructor(container: HTMLElement, source: DataSource, layoutOptions?: LayoutOptions) {
     this.container = container;
     this.source = source;
     this.dagModel = null;
     this.camera = new Camera();
     this._loopRunning = false;
     this.onFrame = null;
+    this._layoutOptions = layoutOptions;
+    this._animator = new LayoutAnimator();
 
     this._ensureDom();
 
@@ -55,6 +64,7 @@ export class PipelineVisualizer {
     this.controls = new Controls(container.querySelector('#toolbar') as HTMLElement, source.runs);
     this.detailPanel = new DetailPanel(container.querySelector('#detail-panel') as HTMLElement);
     this.interaction = new Interaction(this.mainCanvas, this.camera, this.renderer);
+    this.minimap = new Minimap(container.querySelector('#canvas-container') as HTMLElement, this.camera);
 
     // Apply capability gating
     this.controls.setCapabilities(source.capabilities);
@@ -66,11 +76,8 @@ export class PipelineVisualizer {
     this._handleResize();
     window.addEventListener('resize', () => this._handleResize());
 
-    // Resize canvases when container size changes (e.g., detail panel open/close)
-    const canvasContainer = container.querySelector('#canvas-container');
-    if (typeof ResizeObserver !== 'undefined' && canvasContainer) {
-      new ResizeObserver(() => this._handleResize()).observe(canvasContainer);
-    }
+    // No ResizeObserver — the render loop handles canvas resizing each frame
+    // so resize + draw always happen together (no blank-frame flicker).
 
     // Wire source callbacks once — handler references this.dagModel which
     // is updated on each loadRun, so no re-registration needed.
@@ -91,8 +98,10 @@ export class PipelineVisualizer {
 
     this.source.onDynamicBind(() => {
       if (this.dagModel) {
-        relayout(this.dagModel);
-        this.camera.fitToContent(this.dagModel.allNodes());
+        this._animator.snapshot(this.dagModel);
+        relayout(this.dagModel, this._layoutOptions);
+        this._animator.start(this.dagModel, performance.now());
+        this.camera.fitToContentAnimated(this.dagModel.allNodes());
       }
     });
   }
@@ -172,8 +181,10 @@ export class PipelineVisualizer {
 
     this.interaction.onToggleSubPipeline = (nodeId) => {
       if (this.dagModel) {
-        toggleSubPipeline(this.dagModel, nodeId);
-        this.camera.fitToContent(this.dagModel.allNodes());
+        this._animator.snapshot(this.dagModel);
+        toggleSubPipeline(this.dagModel, nodeId, this._layoutOptions);
+        this._animator.start(this.dagModel, performance.now());
+        this.camera.fitToContentAnimated(this.dagModel.allNodes());
       }
     };
   }
@@ -181,6 +192,16 @@ export class PipelineVisualizer {
   _handleResize(): void {
     this.renderer.resize();
     this.webgl.resize();
+  }
+
+  /** Check if canvas container changed size and update buffers + camera in the same frame as render. */
+  _syncCanvasSize(): void {
+    const rect = this.mainCanvas.parentElement!.getBoundingClientRect();
+    if (Math.abs(rect.width - this.camera.width) > 0.5 ||
+        Math.abs(rect.height - this.camera.height) > 0.5) {
+      this.renderer.resize();
+      this.webgl.resize();
+    }
   }
 
   async loadRun(key: string): Promise<void> {
@@ -209,8 +230,9 @@ export class PipelineVisualizer {
 
     this.renderer.setDagModel(this.dagModel);
     this.interaction.setDagModel(this.dagModel);
+    this.minimap.setDagModel(this.dagModel);
 
-    relayout(this.dagModel);
+    relayout(this.dagModel, this._layoutOptions);
 
     this.camera.fitToContent(this.dagModel.allNodes());
 
@@ -258,7 +280,17 @@ export class PipelineVisualizer {
 
   _renderLoop(): void {
     const loop = (time: number): void => {
+      // Sync canvas size with container each frame so resize + draw
+      // always happen together (no blank frame when detail panel animates).
+      this._syncCanvasSize();
+
       this.source.tick(time);
+
+      // Animate layout transitions and camera
+      if (this.dagModel) {
+        this._animator.tick(this.dagModel, time);
+      }
+      this.camera.tickAnimation(time);
 
       if (this.dagModel) {
         this.renderer.render(this.dagModel, time, this.source.frameState.currentTime);
@@ -270,6 +302,8 @@ export class PipelineVisualizer {
         this.webgl.spawnAmbientParticles(this.dagModel, time);
         this.webgl.render(this.camera, time);
       }
+
+      this.minimap.render();
 
       this.onFrame?.(time);
 

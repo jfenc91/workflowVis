@@ -135,6 +135,17 @@ export interface ParticleColorSet {
   ambient: RGBAColor;
 }
 
+// --- Layout options ---
+
+export interface LayoutOptions {
+  nodeWidth?: number;
+  nodeHeight?: number;
+  layerSpacing?: number;
+  nodeSpacing?: number;
+  groupPadding?: number;
+  groupHeader?: number;
+}
+
 // --- Geometry ---
 
 export interface Point {
